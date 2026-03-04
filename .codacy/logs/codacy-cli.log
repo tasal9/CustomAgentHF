@@ -1,0 +1,2 @@
+2026-03-05T02:42:40+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.369.sha.da0cd76 (da0cd76) built at 2026-02-02T13:28:47Z
+2026-03-05T02:42:40+04:30 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command command=init full_command=[/Users/yaqoobtasal/Library/Caches/Codacy/codacy-cli-v2/1.0.0-main.369.sha.da0cd76/codacy-cli-v2 init] args=[]
