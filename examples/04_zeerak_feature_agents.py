@@ -192,7 +192,7 @@ def apply_tabib_policy(task: str) -> Tuple[bool, str]:
     return False, safe_prompt
 
 
-def build_agent(feature: str):
+def build_agent(feature: str, prefer_tool_calling: bool = True):
     model = InferenceClientModel()
 
     if feature in {"dehqan", "tabib", "education", "zamvision"}:
@@ -200,8 +200,8 @@ def build_agent(feature: str):
     else:
         tools = []
 
-    # Use ToolCallingAgent for content-heavy features to avoid code-string parsing issues.
-    if feature in {"chat", "hunar", "education"}:
+    # Use ToolCallingAgent for content-heavy features when provider supports it.
+    if prefer_tool_calling and feature in {"chat", "hunar", "education"}:
         return ToolCallingAgent(tools=tools, model=model)
 
     return CodeAgent(tools=tools, model=model)
@@ -224,13 +224,21 @@ def run_feature(feature: str, task: str) -> str:
             return tabib_payload
         prompt = f"{prompt} {tabib_payload}"
 
-    agent = build_agent(feature)
+    agent = build_agent(feature, prefer_tool_calling=True)
     full_task = (
         f"{prompt}\n\n"
         f"Execution style: {EXECUTION_STYLE_GUIDANCE}\n\n"
         f"User request: {task}"
     )
-    return str(agent.run(full_task))
+    try:
+        return str(agent.run(full_task))
+    except Exception as exc:
+        error_text = str(exc).lower()
+        # Some providers reject tool-calling payloads; retry with CodeAgent.
+        if "bad request" in error_text or "400" in error_text:
+            fallback_agent = build_agent(feature, prefer_tool_calling=False)
+            return str(fallback_agent.run(full_task))
+        raise
 
 
 def parse_args() -> argparse.Namespace:
