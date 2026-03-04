@@ -35,7 +35,8 @@ FEATURE_PROMPTS = {
     "codekhana": (
         "You are CodeKhana, an AI coding mentor. "
         "Teach Python and web development in small practical steps with examples and mini-exercises. "
-        "Prefer learning-by-doing and explain debugging in plain language."
+        "Prefer learning-by-doing and explain debugging in plain language. "
+        "Keep outputs concise and avoid dumping very large boilerplate blocks."
     ),
     "dehqan": (
         "You are Dehqan AI, an agriculture assistant for Afghan farmers. "
@@ -58,6 +59,12 @@ FEATURE_PROMPTS = {
         "Adjust depth based on grade level and subject."
     ),
 }
+
+EXECUTION_STYLE_GUIDANCE = (
+    "When writing action code: avoid escaped triple quotes like \\\"\\\"\\\". "
+    "Prefer building answers with normal strings, short paragraphs, or lists. "
+    "Return practical, concise output instead of very long literal blocks."
+)
 
 ROUTER_KEYWORDS: Dict[str, List[str]] = {
     "zamvision": [
@@ -214,7 +221,11 @@ def run_feature(feature: str, task: str) -> str:
         prompt = f"{prompt} {tabib_payload}"
 
     agent = build_agent(feature)
-    full_task = f"{prompt}\n\nUser request: {task}"
+    full_task = (
+        f"{prompt}\n\n"
+        f"Execution style: {EXECUTION_STYLE_GUIDANCE}\n\n"
+        f"User request: {task}"
+    )
     return str(agent.run(full_task))
 
 
