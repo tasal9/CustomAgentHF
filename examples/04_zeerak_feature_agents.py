@@ -8,7 +8,7 @@ import argparse
 from typing import Dict, List, Tuple
 
 from dotenv import load_dotenv
-from smolagents import CodeAgent, DuckDuckGoSearchTool, InferenceClientModel
+from smolagents import CodeAgent, DuckDuckGoSearchTool, InferenceClientModel, ToolCallingAgent
 
 FEATURE_OVERVIEW = {
     "auto": "Auto-route user input to the best Zeerak feature.",
@@ -192,13 +192,17 @@ def apply_tabib_policy(task: str) -> Tuple[bool, str]:
     return False, safe_prompt
 
 
-def build_agent(feature: str) -> CodeAgent:
+def build_agent(feature: str):
     model = InferenceClientModel()
 
     if feature in {"dehqan", "tabib", "education", "zamvision"}:
         tools = [DuckDuckGoSearchTool()]
     else:
         tools = []
+
+    # Use ToolCallingAgent for content-heavy features to avoid code-string parsing issues.
+    if feature in {"chat", "hunar", "education"}:
+        return ToolCallingAgent(tools=tools, model=model)
 
     return CodeAgent(tools=tools, model=model)
 
