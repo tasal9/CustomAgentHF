@@ -87,3 +87,7 @@
 2026-03-05T03:38:52+04:30 [ERROR] (codacy-cli-v2/cli-v2.go:58) Configuration error error=yaml: line 3: could not find expected ':'
 2026-03-05T03:38:58+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.369.sha.da0cd76 (da0cd76) built at 2026-02-02T13:28:47Z
 2026-03-05T03:38:58+04:30 [ERROR] (codacy-cli-v2/cli-v2.go:58) Configuration error error=yaml: line 3: could not find expected ':'
+2026-03-05T03:41:08+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.369.sha.da0cd76 (da0cd76) built at 2026-02-02T13:28:47Z
+2026-03-05T03:41:08+04:30 [ERROR] (codacy-cli-v2/cli-v2.go:58) Configuration error error=yaml: line 3: could not find expected ':'
+2026-03-05T03:43:06+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.369.sha.da0cd76 (da0cd76) built at 2026-02-02T13:28:47Z
+2026-03-05T03:43:06+04:30 [ERROR] (codacy-cli-v2/cli-v2.go:58) Configuration error error=yaml: line 3: could not find expected ':'
