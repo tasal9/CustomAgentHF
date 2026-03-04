@@ -1,0 +1,64 @@
+# smolagents Starter Workspace
+
+This workspace contains a minimal, runnable setup for building agents with `smolagents`.
+
+## What is smolagents?
+
+`smolagents` is an open-source Python library for building and running LLM agents with very little code.
+
+Key strengths:
+
+- Simplicity: lightweight abstractions and small core.
+- Code-first agents: `CodeAgent` writes executable Python actions.
+- Tool-calling support: `ToolCallingAgent` for JSON/text style function calling.
+- Model-agnostic: supports Hugging Face Inference, LiteLLM providers, Transformers, and more.
+- Tool-agnostic: can integrate MCP tools, LangChain tools, and Hub Spaces.
+- Multimodal support: text, vision, video, and audio use cases.
+
+## Quickstart
+
+### 1. Create and activate a virtual environment
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 2. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure environment variables (optional but recommended)
+
+```bash
+cp .env.example .env
+```
+
+Set values in `.env` as needed:
+
+- `HF_TOKEN` for Hugging Face inference access.
+- `OPENAI_API_KEY` for LiteLLM/OpenAI usage.
+- `ANTHROPIC_API_KEY` for LiteLLM/Anthropic usage.
+
+### 4. Run examples
+
+```bash
+python examples/01_minimal_code_agent.py
+python examples/02_search_tool_agent.py
+python examples/03_model_backends.py
+```
+
+## File Layout
+
+- `examples/01_minimal_code_agent.py`: minimal `CodeAgent` with no tools.
+- `examples/02_search_tool_agent.py`: `CodeAgent` with `DuckDuckGoSearchTool`.
+- `examples/03_model_backends.py`: model backend examples (HF, LiteLLM, Transformers).
+- `requirements.txt`: base install plus optional extras for common backends.
+- `.env.example`: sample environment variables.
+
+## Notes
+
+- Some examples require valid API keys and network access.
+- Local model usage with Transformers can be resource-intensive.

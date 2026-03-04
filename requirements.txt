@@ -1,0 +1,6 @@
+smolagents[toolkit]
+python-dotenv
+
+# Optional extras for more backends. Uncomment as needed.
+# smolagents[litellm]
+# smolagents[transformers]
