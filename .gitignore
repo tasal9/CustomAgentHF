@@ -2,3 +2,10 @@
 
 #Ignore insiders AI rules
 .github/instructions/codacy.instructions.md
+
+# Local environment files
+.env
+
+# Local virtual environments
+.venv/
+.venv-py39-backup/

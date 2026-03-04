@@ -48,6 +48,7 @@ Set values in `.env` as needed:
 python examples/01_minimal_code_agent.py
 python examples/02_search_tool_agent.py
 python examples/03_model_backends.py
+python examples/04_zeerak_feature_agents.py --feature codekhana --task "Teach me Python loops with 3 exercises"
 ```
 
 ## File Layout
@@ -55,8 +56,29 @@ python examples/03_model_backends.py
 - `examples/01_minimal_code_agent.py`: minimal `CodeAgent` with no tools.
 - `examples/02_search_tool_agent.py`: `CodeAgent` with `DuckDuckGoSearchTool`.
 - `examples/03_model_backends.py`: model backend examples (HF, LiteLLM, Transformers).
+- `examples/04_zeerak_feature_agents.py`: Zeerak feature-focused agent launcher.
 - `requirements.txt`: base install plus optional extras for common backends.
 - `.env.example`: sample environment variables.
+
+## Zeerak Feature Agents
+
+Use the Zeerak launcher with one of these `--feature` values:
+
+- `chat`: multilingual conversation support.
+- `zamvision`: OCR/translation/object-recognition guidance workflow.
+- `codekhana`: Python and web development mentorship.
+- `dehqan`: farming support and crop advice.
+- `tabib`: symptom triage guidance with safety boundaries.
+- `hunar`: skills roadmap and CV builder.
+- `education`: class 6-12 tutoring support.
+
+Examples:
+
+```bash
+python examples/04_zeerak_feature_agents.py --feature chat --task "Respond in Dari and introduce yourself"
+python examples/04_zeerak_feature_agents.py --feature dehqan --task "Wheat pest control in Nangarhar this month"
+python examples/04_zeerak_feature_agents.py --feature hunar --task "Build a CV summary for junior web developer"
+```
 
 ## Notes
 
