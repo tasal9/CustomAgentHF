@@ -64,21 +64,27 @@ python examples/04_zeerak_feature_agents.py --feature codekhana --task "Teach me
 
 Use the Zeerak launcher with one of these `--feature` values:
 
+- `auto`: route user input to the best feature automatically.
 - `chat`: multilingual conversation support.
 - `zamvision`: OCR/translation/object-recognition guidance workflow.
 - `codekhana`: Python and web development mentorship.
 - `dehqan`: farming support and crop advice.
-- `tabib`: symptom triage guidance with safety boundaries.
+- `tabib`: symptom triage guidance with emergency escalation templates.
 - `hunar`: skills roadmap and CV builder.
 - `education`: class 6-12 tutoring support.
 
 Examples:
 
 ```bash
+python examples/04_zeerak_feature_agents.py --feature auto --task "I need help writing a CV for a junior developer role"
 python examples/04_zeerak_feature_agents.py --feature chat --task "Respond in Dari and introduce yourself"
 python examples/04_zeerak_feature_agents.py --feature dehqan --task "Wheat pest control in Nangarhar this month"
 python examples/04_zeerak_feature_agents.py --feature hunar --task "Build a CV summary for junior web developer"
 ```
+
+Tabib safety note:
+
+- If urgent keywords are detected (for example chest pain, breathing difficulty, severe bleeding, stroke, self-harm), the script returns an immediate emergency escalation template without calling the model.
 
 ## Notes
 

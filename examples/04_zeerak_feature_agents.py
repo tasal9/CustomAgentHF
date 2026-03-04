@@ -5,11 +5,13 @@ Each feature uses tailored instructions and optional web-search tooling.
 """
 
 import argparse
+from typing import Dict, List, Tuple
 
 from dotenv import load_dotenv
 from smolagents import CodeAgent, DuckDuckGoSearchTool, InferenceClientModel
 
 FEATURE_OVERVIEW = {
+    "auto": "Auto-route user input to the best Zeerak feature.",
     "chat": "Conversational AI in Pashto, Dari, and English.",
     "zamvision": "Document translation, OCR guidance, and object recognition support.",
     "codekhana": "Coding mentor for Python and web development.",
@@ -57,6 +59,131 @@ FEATURE_PROMPTS = {
     ),
 }
 
+ROUTER_KEYWORDS: Dict[str, List[str]] = {
+    "zamvision": [
+        "image",
+        "photo",
+        "camera",
+        "ocr",
+        "translate document",
+        "scan",
+        "object recognition",
+    ],
+    "codekhana": [
+        "python",
+        "javascript",
+        "coding",
+        "programming",
+        "bug",
+        "debug",
+        "html",
+        "css",
+        "web development",
+    ],
+    "dehqan": [
+        "farm",
+        "farming",
+        "crop",
+        "wheat",
+        "soil",
+        "irrigation",
+        "pest",
+        "harvest",
+        "fertilizer",
+        "livestock",
+    ],
+    "tabib": [
+        "symptom",
+        "pain",
+        "fever",
+        "sick",
+        "health",
+        "hospital",
+        "medicine",
+        "doctor",
+        "triage",
+    ],
+    "hunar": [
+        "cv",
+        "resume",
+        "job",
+        "career",
+        "interview",
+        "skills",
+        "upskill",
+        "cover letter",
+    ],
+    "education": [
+        "class",
+        "grade",
+        "homework",
+        "lesson",
+        "exam",
+        "math",
+        "physics",
+        "chemistry",
+        "biology",
+        "curriculum",
+    ],
+    "chat": [
+        "pashto",
+        "dari",
+        "english",
+        "translate",
+        "conversation",
+    ],
+}
+
+TABIB_EMERGENCY_KEYWORDS = [
+    "chest pain",
+    "cannot breathe",
+    "can't breathe",
+    "severe bleeding",
+    "unconscious",
+    "stroke",
+    "heart attack",
+    "suicide",
+    "self-harm",
+    "overdose",
+    "seizure",
+]
+
+TABIB_EMERGENCY_TEMPLATE = (
+    "This may be an emergency. Call local emergency services now or go to the nearest hospital immediately. "
+    "If breathing is difficult, chest pain is severe, bleeding is heavy, or there is risk of self-harm, "
+    "do not wait for online advice. If possible, ask a trusted person to stay with you while you seek urgent care."
+)
+
+
+def route_feature(task: str) -> Tuple[str, str]:
+    lowered = task.lower()
+    scores = {}
+
+    for feature, keywords in ROUTER_KEYWORDS.items():
+        scores[feature] = sum(1 for keyword in keywords if keyword in lowered)
+
+    best_feature = max(scores, key=scores.get)
+    best_score = scores[best_feature]
+
+    if best_score == 0:
+        return "chat", "No clear domain keywords found; defaulted to chat."
+
+    return best_feature, f"Matched {best_score} keyword(s) for {best_feature}."
+
+
+def apply_tabib_policy(task: str) -> Tuple[bool, str]:
+    lowered = task.lower()
+
+    if any(keyword in lowered for keyword in TABIB_EMERGENCY_KEYWORDS):
+        return True, TABIB_EMERGENCY_TEMPLATE
+
+    safe_prompt = (
+        "Use this structured triage style: 1) possible risk level, 2) immediate self-care, "
+        "3) warning signs that require urgent care, 4) when to contact a clinician. "
+        "Do not give a definitive diagnosis or medication dosage."
+    )
+    return False, safe_prompt
+
 
 def build_agent(feature: str) -> CodeAgent:
     model = InferenceClientModel()
@@ -70,7 +197,22 @@ def build_agent(feature: str) -> CodeAgent:
 
 
 def run_feature(feature: str, task: str) -> str:
+    if feature == "auto":
+        selected_feature, reason = route_feature(task)
+        answer = run_feature(selected_feature, task)
+        return (
+            f"[router] Selected feature: {selected_feature}. {reason}\n\n"
+            f"{answer}"
+        )
+
     prompt = FEATURE_PROMPTS[feature]
+
+    if feature == "tabib":
+        emergency, tabib_payload = apply_tabib_policy(task)
+        if emergency:
+            return tabib_payload
+        prompt = f"{prompt} {tabib_payload}"
+
     agent = build_agent(feature)
     full_task = f"{prompt}\n\nUser request: {task}"
     return str(agent.run(full_task))
@@ -82,7 +224,7 @@ def parse_args() -> argparse.Namespace:
         "--feature",
         required=True,
         choices=sorted(FEATURE_OVERVIEW.keys()),
-        help="Zeerak feature mode to run.",
+        help="Zeerak feature mode to run (use 'auto' for routing).",
     )
     parser.add_argument(
         "--task",
