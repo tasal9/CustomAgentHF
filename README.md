@@ -86,6 +86,30 @@ Tabib safety note:
 
 - If urgent keywords are detected (for example chest pain, breathing difficulty, severe bleeding, stroke, self-harm), the script returns an immediate emergency escalation template without calling the model.
 
+## Recommended Models Per Feature
+
+Default model mapping in `examples/04_zeerak_feature_agents.py`:
+
+- `chat`: `CohereForAI/aya-expanse-32b` (strong multilingual behavior for regional language support).
+- `zamvision`: `Qwen/Qwen2.5-VL-72B-Instruct` (vision-capable for OCR/image reasoning workflows).
+- `codekhana`: `Qwen/Qwen2.5-Coder-32B-Instruct` (coding-focused instruction model).
+- `dehqan`: `meta-llama/Llama-3.3-70B-Instruct` (strong general reasoning for agriculture guidance).
+- `tabib`: `microsoft/Phi-4` (concise clinical-style reasoning with policy guardrails in script).
+- `hunar`: `meta-llama/Llama-3.1-70B-Instruct` (good structured writing for CV/interview content).
+- `education`: `Qwen/Qwen2.5-72B-Instruct` (strong tutoring/explainer quality).
+
+Override any default via environment variables in `.env`:
+
+```bash
+ZEERAK_MODEL_CHAT=
+ZEERAK_MODEL_ZAMVISION=
+ZEERAK_MODEL_CODEKHANA=
+ZEERAK_MODEL_DEHQAN=
+ZEERAK_MODEL_TABIB=
+ZEERAK_MODEL_HUNAR=
+ZEERAK_MODEL_EDUCATION=
+```
+
 ## Notes
 
 - Some examples require valid API keys and network access.
