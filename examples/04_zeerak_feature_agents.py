@@ -34,6 +34,8 @@ FEATURE_MODEL_DEFAULTS = {
     "education": "Qwen/Qwen2.5-72B-Instruct",
 }
 
+GLOBAL_FALLBACK_MODEL = "Qwen/Qwen3-Next-80B-A3B-Thinking"
+
 FEATURE_PROMPTS = {
     "chat": (
         "You are Zeerak Chat, a multilingual conversational assistant for Afghan users. "
@@ -213,8 +215,13 @@ def model_id_for_feature(feature: str) -> str:
     return FEATURE_MODEL_DEFAULTS.get(feature, "Qwen/Qwen3-Next-80B-A3B-Thinking")
 
 
-def build_agent(feature: str, prefer_tool_calling: bool = True):
-    model = InferenceClientModel(model_id=model_id_for_feature(feature))
+def model_fallback_id() -> str:
+    return os.getenv("ZEERAK_MODEL_FALLBACK", GLOBAL_FALLBACK_MODEL)
+
+
+def build_agent(feature: str, prefer_tool_calling: bool = True, model_id: str | None = None):
+    selected_model_id = model_id or model_id_for_feature(feature)
+    model = InferenceClientModel(model_id=selected_model_id)
 
     if feature in {"dehqan", "tabib", "education", "zamvision"}:
         tools = [DuckDuckGoSearchTool()]
@@ -245,24 +252,30 @@ def run_feature(feature: str, task: str) -> str:
             return tabib_payload
         prompt = f"{prompt} {tabib_payload}"
 
-    agent = build_agent(feature, prefer_tool_calling=True)
+    primary_model = model_id_for_feature(feature)
+    agent = build_agent(feature, prefer_tool_calling=True, model_id=primary_model)
     full_task = (
         f"{prompt}\n\n"
         f"Execution style: {EXECUTION_STYLE_GUIDANCE}\n\n"
         f"User request: {task}"
     )
+    used_model = primary_model
+
     try:
         answer = str(agent.run(full_task))
     except Exception as exc:
         error_text = str(exc).lower()
         # Some providers reject tool-calling payloads; retry with CodeAgent.
         if "bad request" in error_text or "400" in error_text:
-            fallback_agent = build_agent(feature, prefer_tool_calling=False)
+            fallback_agent = build_agent(feature, prefer_tool_calling=False, model_id=primary_model)
+            answer = str(fallback_agent.run(full_task))
+        elif "403" in error_text or "forbidden" in error_text or "provider" in error_text:
+            used_model = model_fallback_id()
+            fallback_agent = build_agent(feature, prefer_tool_calling=False, model_id=used_model)
             answer = str(fallback_agent.run(full_task))
         else:
             raise
 
-    used_model = model_id_for_feature(feature)
     return f"[model] {used_model}\n\n{answer}"
 
 

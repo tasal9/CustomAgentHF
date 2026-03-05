@@ -108,7 +108,12 @@ ZEERAK_MODEL_DEHQAN=
 ZEERAK_MODEL_TABIB=
 ZEERAK_MODEL_HUNAR=
 ZEERAK_MODEL_EDUCATION=
+ZEERAK_MODEL_FALLBACK=
 ```
+
+Fallback behavior:
+
+- If your selected feature model is blocked by provider permissions (for example 403/provider-not-enabled), the launcher retries automatically with `ZEERAK_MODEL_FALLBACK`.
 
 ## Notes
 
