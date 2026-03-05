@@ -5,6 +5,7 @@ Each feature uses tailored instructions and optional web-search tooling.
 """
 
 import argparse
+import os
 from typing import Dict, List, Tuple
 
 from dotenv import load_dotenv
@@ -19,6 +20,18 @@ FEATURE_OVERVIEW = {
     "tabib": "Health triage and symptom checker with safety boundaries.",
     "hunar": "Skills guidance and CV/resume building.",
     "education": "Curriculum-aligned tutoring for Afghan classes 6-12.",
+}
+
+# Default model picks per feature. Override any value with environment variables:
+# ZEERAK_MODEL_<FEATURE>, e.g. ZEERAK_MODEL_CODEKHANA.
+FEATURE_MODEL_DEFAULTS = {
+    "chat": "CohereForAI/aya-expanse-32b",
+    "zamvision": "Qwen/Qwen2.5-VL-72B-Instruct",
+    "codekhana": "Qwen/Qwen2.5-Coder-32B-Instruct",
+    "dehqan": "meta-llama/Llama-3.3-70B-Instruct",
+    "tabib": "microsoft/Phi-4",
+    "hunar": "meta-llama/Llama-3.1-70B-Instruct",
+    "education": "Qwen/Qwen2.5-72B-Instruct",
 }
 
 FEATURE_PROMPTS = {
@@ -192,8 +205,16 @@ def apply_tabib_policy(task: str) -> Tuple[bool, str]:
     return False, safe_prompt
 
 
+def model_id_for_feature(feature: str) -> str:
+    env_key = f"ZEERAK_MODEL_{feature.upper()}"
+    override = os.getenv(env_key)
+    if override:
+        return override
+    return FEATURE_MODEL_DEFAULTS.get(feature, "Qwen/Qwen3-Next-80B-A3B-Thinking")
+
+
 def build_agent(feature: str, prefer_tool_calling: bool = True):
-    model = InferenceClientModel()
+    model = InferenceClientModel(model_id=model_id_for_feature(feature))
 
     if feature in {"dehqan", "tabib", "education", "zamvision"}:
         tools = [DuckDuckGoSearchTool()]
@@ -231,14 +252,18 @@ def run_feature(feature: str, task: str) -> str:
         f"User request: {task}"
     )
     try:
-        return str(agent.run(full_task))
+        answer = str(agent.run(full_task))
     except Exception as exc:
         error_text = str(exc).lower()
         # Some providers reject tool-calling payloads; retry with CodeAgent.
         if "bad request" in error_text or "400" in error_text:
             fallback_agent = build_agent(feature, prefer_tool_calling=False)
-            return str(fallback_agent.run(full_task))
-        raise
+            answer = str(fallback_agent.run(full_task))
+        else:
+            raise
+
+    used_model = model_id_for_feature(feature)
+    return f"[model] {used_model}\n\n{answer}"
 
 
 def parse_args() -> argparse.Namespace:
@@ -262,6 +287,10 @@ def main() -> None:
     args = parse_args()
 
     print(f"[feature] {args.feature}: {FEATURE_OVERVIEW[args.feature]}")
+
+    if args.feature != "auto":
+        print(f"[model] {model_id_for_feature(args.feature)}")
+
     answer = run_feature(args.feature, args.task)
     print("\n[answer]")
     print(answer)
