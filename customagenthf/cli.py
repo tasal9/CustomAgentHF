@@ -31,12 +31,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     zeerak_parser = subparsers.add_parser("zeerak", help="Run a Zeerak feature agent.")
     zeerak_parser.add_argument(
+        "--list-features",
+        action="store_true",
+        help="List available Zeerak features and exit.",
+    )
+    zeerak_parser.add_argument(
+        "--search-features",
+        help="Filter features by name or overview and exit.",
+    )
+    zeerak_parser.add_argument(
         "--feature",
-        required=True,
         choices=sorted(FEATURE_OVERVIEW.keys()),
         help="Zeerak feature mode to run.",
     )
-    zeerak_parser.add_argument("--task", required=True, help="User task or question.")
+    zeerak_parser.add_argument("--task", help="User task or question.")
 
     return parser
 
@@ -67,7 +75,16 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     if args.command == "zeerak":
-        zeerak_main(["--feature", args.feature, "--task", args.task])
+        zeerak_args = []
+        if args.list_features:
+            zeerak_args.append("--list-features")
+        if args.search_features:
+            zeerak_args.extend(["--search-features", args.search_features])
+        if args.feature:
+            zeerak_args.extend(["--feature", args.feature])
+        if args.task:
+            zeerak_args.extend(["--task", args.task])
+        zeerak_main(zeerak_args)
         return
 
     parser.error(f"Unsupported command: {args.command}")

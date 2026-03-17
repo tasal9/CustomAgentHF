@@ -59,6 +59,8 @@ You can also run the package directly:
 python -m customagenthf minimal
 python -m customagenthf search
 python -m customagenthf backends --backend hf
+python -m customagenthf zeerak --list-features
+python -m customagenthf zeerak --search-features curriculum
 python -m customagenthf zeerak --feature auto --task "Help me write a junior developer CV"
 ```
 
@@ -68,6 +70,7 @@ python -m customagenthf zeerak --feature auto --task "Help me write a junior dev
 - `customagenthf/search.py`: reusable search-enabled agent helpers.
 - `customagenthf/backends.py`: model backend runners for HF, LiteLLM, and Transformers.
 - `customagenthf/zeerak/`: Zeerak subpackage split into config, routing, policy, execution, and CLI modules.
+- `customagenthf/zeerak/prompts/*.txt`: prompt content stored as editable text assets instead of embedded Python strings.
 - `customagenthf/cli.py`: package CLI exposed through `python -m customagenthf` and `customagenthf`.
 - `examples/01_minimal_code_agent.py`: thin wrapper for the minimal package entry point.
 - `examples/02_search_tool_agent.py`: thin wrapper for the search package entry point.
@@ -84,10 +87,13 @@ Import the reusable helpers directly in your own code:
 ```python
 from customagenthf.basic import run_minimal_task
 from customagenthf.search import run_search_task
-from customagenthf.zeerak import run_feature
+from customagenthf.zeerak import list_features, render_feature_table, run_feature, search_features
 
 print(run_minimal_task("Sum the numbers from 1 to 20"))
 print(run_search_task("What is the weather in Kabul today?"))
+print([feature.name for feature in list_features(include_auto=False)])
+print([feature.name for feature in search_features("curriculum")])
+print(render_feature_table(search_features("curriculum")))
 print(run_feature("codekhana", "Explain Python functions with two short exercises"))
 ```
 

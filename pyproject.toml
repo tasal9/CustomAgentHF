@@ -20,5 +20,8 @@ transformers = ["smolagents[transformers]"]
 [project.scripts]
 customagenthf = "customagenthf.cli:main"
 
-[tool.setuptools]
-packages = ["customagenthf"]
+[tool.setuptools.packages.find]
+include = ["customagenthf", "customagenthf.*"]
+
+[tool.setuptools.package-data]
+"customagenthf.zeerak" = ["prompts/*.txt"]

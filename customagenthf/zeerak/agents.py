@@ -4,9 +4,9 @@ from smolagents import CodeAgent, DuckDuckGoSearchTool, InferenceClientModel, To
 
 from .config import (
     EXECUTION_STYLE_GUIDANCE,
-    FEATURE_PROMPTS,
     SEARCH_ENABLED_FEATURES,
     TOOL_CALLING_FEATURES,
+    load_feature_prompt,
     model_fallback_id,
     model_id_for_feature,
 )
@@ -29,13 +29,21 @@ def build_agent(feature: str, prefer_tool_calling: bool = True, model_id: str | 
     return CodeAgent(tools=tools, model=model)
 
 
+def assemble_feature_task(prompt: str, task: str) -> str:
+    return (
+        f"{prompt}\n\n"
+        f"Execution style: {EXECUTION_STYLE_GUIDANCE}\n\n"
+        f"User request: {task}"
+    )
+
+
 def run_feature(feature: str, task: str) -> str:
     if feature == "auto":
         selected_feature, reason = route_feature(task)
         answer = run_feature(selected_feature, task)
         return f"[router] Selected feature: {selected_feature}. {reason}\n\n{answer}"
 
-    prompt = FEATURE_PROMPTS[feature]
+    prompt = load_feature_prompt(feature)
 
     if feature == "tabib":
         emergency, tabib_payload = apply_tabib_policy(task)
@@ -45,11 +53,7 @@ def run_feature(feature: str, task: str) -> str:
 
     primary_model = model_id_for_feature(feature)
     agent = build_agent(feature, prefer_tool_calling=True, model_id=primary_model)
-    full_task = (
-        f"{prompt}\n\n"
-        f"Execution style: {EXECUTION_STYLE_GUIDANCE}\n\n"
-        f"User request: {task}"
-    )
+    full_task = assemble_feature_task(prompt, task)
     used_model = primary_model
 
     try:
