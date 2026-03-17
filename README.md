@@ -1,6 +1,6 @@
 # smolagents Starter Workspace
 
-This workspace contains a minimal, runnable setup for building agents with `smolagents`.
+This workspace contains a minimal, runnable setup for building agents with `smolagents`, now organized as a reusable Python package.
 
 ## What is smolagents?
 
@@ -24,11 +24,13 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 2. Install dependencies
+### 2. Install the package and dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
+
+This installs the project in editable mode via `requirements.txt`, so both the reusable package and the example scripts work from the repository checkout.
 
 ### 3. Configure environment variables (optional but recommended)
 
@@ -51,14 +53,43 @@ python examples/03_model_backends.py
 python examples/04_zeerak_feature_agents.py --feature codekhana --task "Teach me Python loops with 3 exercises"
 ```
 
+You can also run the package directly:
+
+```bash
+python -m customagenthf minimal
+python -m customagenthf search
+python -m customagenthf backends --backend hf
+python -m customagenthf zeerak --feature auto --task "Help me write a junior developer CV"
+```
+
 ## File Layout
 
-- `examples/01_minimal_code_agent.py`: minimal `CodeAgent` with no tools.
-- `examples/02_search_tool_agent.py`: `CodeAgent` with `DuckDuckGoSearchTool`.
-- `examples/03_model_backends.py`: model backend examples (HF, LiteLLM, Transformers).
-- `examples/04_zeerak_feature_agents.py`: Zeerak feature-focused agent launcher.
-- `requirements.txt`: base install plus optional extras for common backends.
+- `customagenthf/basic.py`: reusable minimal `CodeAgent` helpers.
+- `customagenthf/search.py`: reusable search-enabled agent helpers.
+- `customagenthf/backends.py`: model backend runners for HF, LiteLLM, and Transformers.
+- `customagenthf/zeerak.py`: Zeerak routing, prompts, policy checks, and feature execution.
+- `customagenthf/cli.py`: package CLI exposed through `python -m customagenthf` and `customagenthf`.
+- `examples/01_minimal_code_agent.py`: thin wrapper for the minimal package entry point.
+- `examples/02_search_tool_agent.py`: thin wrapper for the search package entry point.
+- `examples/03_model_backends.py`: thin wrapper for the backend package entry point.
+- `examples/04_zeerak_feature_agents.py`: thin wrapper for the Zeerak package entry point.
+- `requirements.txt`: editable install for the package.
+- `pyproject.toml`: package metadata and optional extras for backend-specific installs.
 - `.env.example`: sample environment variables.
+
+## Package Usage
+
+Import the reusable helpers directly in your own code:
+
+```python
+from customagenthf.basic import run_minimal_task
+from customagenthf.search import run_search_task
+from customagenthf.zeerak import run_feature
+
+print(run_minimal_task("Sum the numbers from 1 to 20"))
+print(run_search_task("What is the weather in Kabul today?"))
+print(run_feature("codekhana", "Explain Python functions with two short exercises"))
+```
 
 ## Zeerak Feature Agents
 

@@ -1,6 +1,5 @@
-smolagents[toolkit]
-python-dotenv
+-e .
 
-# Optional extras for more backends. Uncomment as needed.
-# smolagents[litellm]
-# smolagents[transformers]
+# Optional extras for more backends.
+# pip install -e .[litellm]
+# pip install -e .[transformers]
