@@ -60,6 +60,7 @@ python -m customagenthf minimal
 python -m customagenthf search
 python -m customagenthf backends --backend hf
 python -m customagenthf zeerak --list-features
+python -m customagenthf zeerak --list-features --max-width 80
 python -m customagenthf zeerak --search-features curriculum
 python -m customagenthf zeerak --search-features curriculum --output json
 python -m customagenthf zeerak --feature auto --task "Help me write a junior developer CV"
@@ -97,6 +98,24 @@ print([feature.name for feature in search_features("curriculum")])
 print(render_feature_table(search_features("curriculum")))
 print(render_feature_json(search_features("curriculum")))
 print(run_feature("codekhana", "Explain Python functions with two short exercises"))
+```
+
+Example JSON payload from `python -m customagenthf zeerak --search-features curriculum --output json`:
+
+```json
+[
+	{
+		"name": "education",
+		"overview": "Curriculum-aligned tutoring for Afghan classes 6-12.",
+		"default_model_id": "Qwen/Qwen2.5-72B-Instruct",
+		"search_enabled": true,
+		"tool_calling_enabled": true,
+		"capabilities": [
+			"search",
+			"tool-calling"
+		]
+	}
+]
 ```
 
 ## Zeerak Feature Agents

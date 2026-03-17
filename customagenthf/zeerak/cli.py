@@ -29,6 +29,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Output format for feature discovery commands.",
     )
     parser.add_argument(
+        "--max-width",
+        type=int,
+        help="Maximum table width for feature discovery output.",
+    )
+    parser.add_argument(
         "--feature",
         choices=sorted(FEATURE_OVERVIEW.keys()),
         help="Zeerak feature mode to run (use 'auto' for routing).",
@@ -45,6 +50,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     if args.output != "table" and not args.list_features and not args.search_features:
         parser.error("--output can only be used with --list-features or --search-features")
 
+    if args.max_width is not None and args.max_width <= 0:
+        parser.error("--max-width must be a positive integer")
+
+    if args.max_width is not None and args.output != "table":
+        parser.error("--max-width can only be used with --output table")
+
     if not args.list_features and not args.search_features and (not args.feature or not args.task):
         parser.error("the following arguments are required: --feature, --task")
 
@@ -54,7 +65,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> None:
     load_dotenv()
     args = parse_args(argv)
-    terminal_width = shutil.get_terminal_size(fallback=(120, 24)).columns if args.output == "table" else None
+    terminal_width = args.max_width
+    if terminal_width is None and args.output == "table":
+        terminal_width = shutil.get_terminal_size(fallback=(120, 24)).columns
 
     if args.list_features:
         print(render_feature_output(list_features(), output_format=args.output, max_width=terminal_width))

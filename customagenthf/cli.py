@@ -46,6 +46,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Output format for feature discovery commands.",
     )
     zeerak_parser.add_argument(
+        "--max-width",
+        type=int,
+        help="Maximum table width for feature discovery output.",
+    )
+    zeerak_parser.add_argument(
         "--feature",
         choices=sorted(FEATURE_OVERVIEW.keys()),
         help="Zeerak feature mode to run.",
@@ -88,6 +93,8 @@ def main(argv: list[str] | None = None) -> None:
             zeerak_args.extend(["--search-features", args.search_features])
         if args.output:
             zeerak_args.extend(["--output", args.output])
+        if args.max_width is not None:
+            zeerak_args.extend(["--max-width", str(args.max_width)])
         if args.feature:
             zeerak_args.extend(["--feature", args.feature])
         if args.task:
