@@ -205,3 +205,16 @@
 2026-03-18T02:10:01+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.370.sha.2847fb6 (2847fb6) built at 2026-03-17T12:37:16Z
 2026-03-18T02:10:01+04:30 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[/Users/yaqoobtasal/Documents/MyProject/CustomAgentHF/.codacy/codacy.yaml] command=analyze full_command=[/Users/yaqoobtasal/Library/Caches/Codacy/codacy-cli-v2/1.0.0-main.370.sha.2847fb6/codacy-cli-v2 analyze /Users/yaqoobtasal/Documents/MyProject/CustomAgentHF/.codacy/codacy.yaml --format sarif]
 2026-03-18T02:10:01+04:30 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2026-03-18T02:10:13+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.370.sha.2847fb6 (2847fb6) built at 2026-03-17T12:37:16Z
+2026-03-18T02:10:13+04:30 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[] command=install full_command=[/Users/yaqoobtasal/Library/Caches/Codacy/codacy-cli-v2/1.0.0-main.370.sha.2847fb6/codacy-cli-v2 install]
+2026-03-18T02:10:13+04:30 [INFO] (codacy-cli-v2/cmd/install.go:78) Starting installation process
+2026-03-18T02:10:13+04:30 [INFO] (codacy-cli-v2/cmd/install.go:116) Tool scheduled for installation tool=opengrep version=1.16.4
+2026-03-18T02:10:13+04:30 [INFO] (codacy-cli-v2/cmd/install.go:116) Tool scheduled for installation tool=pylint version=3.3.9
+2026-03-18T02:10:13+04:30 [INFO] (codacy-cli-v2/cmd/install.go:185) Installing tool tool=opengrep version=1.16.4
+2026-03-18T02:10:13+04:30 [DEBUG] (codacy-cli-v2/config/tools-installer.go:115) Installing download-based tool version=1.16.4 downloadURL=https://github.com/opengrep/opengrep/releases/download/v1.16.4/opengrep_osx_x86 tool=opengrep
+2026-03-18T02:10:13+04:30 [DEBUG] (codacy-cli-v2/config/tools-installer.go:268) Downloading tool version=1.16.4 downloadURL=https://github.com/opengrep/opengrep/releases/download/v1.16.4/opengrep_osx_x86 downloadPath=/Users/yaqoobtasal/.cache/codacy/tools/opengrep_osx_x86 tool=opengrep
+2026-03-18T02:10:13+04:30 [DEBUG] (codacy-cli-v2/utils/download.go:15) Attempting to download from URL url=https://github.com/opengrep/opengrep/releases/download/v1.16.4/opengrep_osx_x86
+2026-03-18T02:10:13+04:30 [DEBUG] (codacy-cli-v2/utils/download.go:21) Target filename determined fileName=opengrep_osx_x86
+2026-03-18T02:10:13+04:30 [DEBUG] (codacy-cli-v2/utils/download.go:27) Destination path set destPath=/Users/yaqoobtasal/.cache/codacy/tools/opengrep_osx_x86
+2026-03-18T02:10:13+04:30 [DEBUG] (codacy-cli-v2/utils/download.go:47) Making HTTP GET request url=https://github.com/opengrep/opengrep/releases/download/v1.16.4/opengrep_osx_x86
+2026-03-18T02:10:17+04:30 [DEBUG] (codacy-cli-v2/utils/download.go:69) Downloading file content
