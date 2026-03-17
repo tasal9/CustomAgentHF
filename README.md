@@ -67,7 +67,7 @@ python -m customagenthf zeerak --feature auto --task "Help me write a junior dev
 - `customagenthf/basic.py`: reusable minimal `CodeAgent` helpers.
 - `customagenthf/search.py`: reusable search-enabled agent helpers.
 - `customagenthf/backends.py`: model backend runners for HF, LiteLLM, and Transformers.
-- `customagenthf/zeerak.py`: Zeerak routing, prompts, policy checks, and feature execution.
+- `customagenthf/zeerak/`: Zeerak subpackage split into config, routing, policy, execution, and CLI modules.
 - `customagenthf/cli.py`: package CLI exposed through `python -m customagenthf` and `customagenthf`.
 - `examples/01_minimal_code_agent.py`: thin wrapper for the minimal package entry point.
 - `examples/02_search_tool_agent.py`: thin wrapper for the search package entry point.
