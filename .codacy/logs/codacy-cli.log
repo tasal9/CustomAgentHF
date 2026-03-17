@@ -218,3 +218,8 @@
 2026-03-18T02:10:13+04:30 [DEBUG] (codacy-cli-v2/utils/download.go:27) Destination path set destPath=/Users/yaqoobtasal/.cache/codacy/tools/opengrep_osx_x86
 2026-03-18T02:10:13+04:30 [DEBUG] (codacy-cli-v2/utils/download.go:47) Making HTTP GET request url=https://github.com/opengrep/opengrep/releases/download/v1.16.4/opengrep_osx_x86
 2026-03-18T02:10:17+04:30 [DEBUG] (codacy-cli-v2/utils/download.go:69) Downloading file content
+2026-03-18T02:15:02+04:30 [DEBUG] (codacy-cli-v2/config/tools-installer.go:115) Installing download-based tool downloadURL=https://github.com/opengrep/opengrep/releases/download/v1.16.4/opengrep_osx_x86 tool=opengrep version=1.16.4
+2026-03-18T02:15:02+04:30 [DEBUG] (codacy-cli-v2/config/tools-installer.go:281) Using existing tool download tool=opengrep version=1.16.4 downloadPath=/Users/yaqoobtasal/.cache/codacy/tools/opengrep_osx_x86
+2026-03-18T02:15:02+04:30 [DEBUG] (codacy-cli-v2/config/tools-installer.go:331) Installing bare binary tool=opengrep version=1.16.4 downloadPath=/Users/yaqoobtasal/.cache/codacy/tools/opengrep_osx_x86
+2026-03-18T02:15:02+04:30 [DEBUG] (codacy-cli-v2/config/tools-installer.go:341) Tool extraction completed version=1.16.4 tool=opengrep
+2026-03-18T02:15:02+04:30 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=opengrep toolConfigPath=.codacy/tools-configs/semgrep.yaml
