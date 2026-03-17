@@ -40,6 +40,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Filter features by name or overview and exit.",
     )
     zeerak_parser.add_argument(
+        "--output",
+        choices=["table", "json"],
+        default="table",
+        help="Output format for feature discovery commands.",
+    )
+    zeerak_parser.add_argument(
         "--feature",
         choices=sorted(FEATURE_OVERVIEW.keys()),
         help="Zeerak feature mode to run.",
@@ -80,6 +86,8 @@ def main(argv: list[str] | None = None) -> None:
             zeerak_args.append("--list-features")
         if args.search_features:
             zeerak_args.extend(["--search-features", args.search_features])
+        if args.output:
+            zeerak_args.extend(["--output", args.output])
         if args.feature:
             zeerak_args.extend(["--feature", args.feature])
         if args.task:

@@ -1,12 +1,14 @@
 """CLI entry points for Zeerak feature agents."""
 
 import argparse
+import shutil
 
 from dotenv import load_dotenv
 
 from .agents import run_feature
 from .config import FEATURE_OVERVIEW, model_id_for_feature
-from .features import list_features, render_feature_table, search_features
+from .features import list_features, search_features
+from .rendering import render_feature_output
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -19,6 +21,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--search-features",
         help="Filter features by name or overview and exit.",
+    )
+    parser.add_argument(
+        "--output",
+        choices=["table", "json"],
+        default="table",
+        help="Output format for feature discovery commands.",
     )
     parser.add_argument(
         "--feature",
@@ -34,6 +42,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     if args.list_features and args.search_features:
         parser.error("--list-features and --search-features cannot be used together")
 
+    if args.output != "table" and not args.list_features and not args.search_features:
+        parser.error("--output can only be used with --list-features or --search-features")
+
     if not args.list_features and not args.search_features and (not args.feature or not args.task):
         parser.error("the following arguments are required: --feature, --task")
 
@@ -43,13 +54,14 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> None:
     load_dotenv()
     args = parse_args(argv)
+    terminal_width = shutil.get_terminal_size(fallback=(120, 24)).columns if args.output == "table" else None
 
     if args.list_features:
-        print(render_feature_table(list_features()))
+        print(render_feature_output(list_features(), output_format=args.output, max_width=terminal_width))
         return
 
     if args.search_features:
-        print(render_feature_table(search_features(args.search_features)))
+        print(render_feature_output(search_features(args.search_features), output_format=args.output, max_width=terminal_width))
         return
 
     print(f"[feature] {args.feature}: {FEATURE_OVERVIEW[args.feature]}")

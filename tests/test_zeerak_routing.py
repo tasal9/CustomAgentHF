@@ -5,6 +5,8 @@ from customagenthf.zeerak import (
     get_feature_spec,
     list_features,
     load_feature_prompt,
+    render_feature_json,
+    render_feature_output,
     render_feature_table,
     route_feature,
     search_features,
@@ -59,6 +61,48 @@ class RouteFeatureTests(unittest.TestCase):
             "education | search, tool-calling | Qwen/Qwen2.5-72B-Instruct | Curriculum-aligned tutoring for Afghan classes 6-12."
         )
         self.assertEqual(render_feature_table(features), expected)
+
+    def test_render_feature_table_truncates_for_narrow_width(self) -> None:
+        features = list_features()
+
+        expected = (
+            "feature   | capabilities | default-model | overview            \n"
+            "----------+--------------+---------------+---------------------\n"
+            "auto      | -            | -             | Auto-route user i...\n"
+            "chat      | tool-calling | CohereForA... | Conversational AI...\n"
+            "zamvision | search       | Qwen/Qwen2... | Document translat...\n"
+            "codekhana | -            | Qwen/Qwen2... | Coding mentor for...\n"
+            "dehqan    | search       | meta-llama... | Agriculture assis...\n"
+            "tabib     | search       | microsoft/... | Health triage and...\n"
+            "hunar     | tool-calling | meta-llama... | Skills guidance a...\n"
+            "education | search, t... | Qwen/Qwen2... | Curriculum-aligne..."
+        )
+        self.assertEqual(render_feature_table(features, max_width=60), expected)
+
+    def test_render_feature_json_matches_expected_snapshot(self) -> None:
+        features = search_features("curriculum")
+
+        expected = (
+            "[\n"
+            "  {\n"
+            "    \"name\": \"education\",\n"
+            "    \"overview\": \"Curriculum-aligned tutoring for Afghan classes 6-12.\",\n"
+            "    \"default_model_id\": \"Qwen/Qwen2.5-72B-Instruct\",\n"
+            "    \"search_enabled\": true,\n"
+            "    \"tool_calling_enabled\": true,\n"
+            "    \"capabilities\": [\n"
+            "      \"search\",\n"
+            "      \"tool-calling\"\n"
+            "    ]\n"
+            "  }\n"
+            "]"
+        )
+        self.assertEqual(render_feature_json(features), expected)
+
+    def test_render_feature_output_uses_json_mode(self) -> None:
+        features = search_features("curriculum")
+
+        self.assertEqual(render_feature_output(features, output_format="json"), render_feature_json(features))
 
 
 if __name__ == "__main__":
