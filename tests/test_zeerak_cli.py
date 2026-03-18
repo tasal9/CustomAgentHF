@@ -58,6 +58,16 @@ class ZeerakCliTests(unittest.TestCase):
         self.assertIn("--max-width", completed.stdout)
         self.assertIn("--no-truncate", completed.stdout)
 
+    def test_feature_run_output_does_not_preprint_model_line(self) -> None:
+        completed = self.run_cli("--feature", "chat", "--task", "hello")
+
+        if completed.returncode != 0:
+            self.skipTest(completed.stderr.strip() or "chat runtime requires configured model access")
+
+        self.assertIn("[answer]", completed.stdout)
+        answer_index = completed.stdout.index("[answer]")
+        self.assertNotIn("[model]", completed.stdout[:answer_index])
+
     def test_list_and_search_features_are_mutually_exclusive(self) -> None:
         completed = self.run_cli("--list-features", "--search-features", "curriculum")
 

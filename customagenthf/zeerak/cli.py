@@ -101,9 +101,6 @@ def main(argv: list[str] | None = None) -> None:
 
     print(f"[feature] {args.feature}: {FEATURE_OVERVIEW[args.feature]}")
 
-    if args.feature != "auto":
-        print(f"[model] {model_id_for_feature(args.feature)}")
-
     answer = run_feature(args.feature, args.task)
     print("\n[answer]")
     print(answer)

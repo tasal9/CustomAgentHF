@@ -181,7 +181,11 @@ ZEERAK_MODEL_FALLBACK=
 
 Fallback behavior:
 
-- If your selected feature model is blocked by provider permissions (for example 403/provider-not-enabled), the launcher retries automatically with `ZEERAK_MODEL_FALLBACK`.
+- If your selected feature model is blocked by provider permissions (for example 403/provider-not-enabled), the launcher retries automatically with `ZEERAK_MODEL_FALLBACK` and reports the retry in a single concise fallback line instead of dumping the denied primary-run transcript.
+
+Rahnama formatting note:
+
+- Rahnama responses are post-formatted into cleaner markdown sections so document and process guidance reads more cleanly in the CLI.
 
 ## Notes
 
