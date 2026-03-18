@@ -18,5 +18,8 @@ def search_features(query: str, include_auto: bool = True) -> list[FeatureSpec]:
     return [
         feature
         for feature in list_features(include_auto=include_auto)
-        if lowered_query in feature.name.lower() or lowered_query in feature.overview.lower()
+        if lowered_query in feature.name.lower()
+        or lowered_query in feature.overview.lower()
+        or any(lowered_query in alias.lower() for alias in feature.routing_aliases)
+        or any(lowered_query in tag.lower() for tag in feature.routing_tags)
     ]

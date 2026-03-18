@@ -14,6 +14,8 @@ class FeatureSpec:
     prompt_file: str | None = None
     search_enabled: bool = False
     tool_calling_enabled: bool = False
+    routing_aliases: tuple[str, ...] = ()
+    routing_tags: tuple[str, ...] = ()
 
 
 FEATURE_SPECS = {
@@ -27,6 +29,8 @@ FEATURE_SPECS = {
         default_model_id="CohereForAI/aya-expanse-32b",
         prompt_file="chat.txt",
         tool_calling_enabled=True,
+        routing_aliases=("pashto", "dari", "english conversation", "chat", "translate"),
+        routing_tags=("conversation", "language", "translation"),
     ),
     "zamvision": FeatureSpec(
         name="zamvision",
@@ -34,12 +38,16 @@ FEATURE_SPECS = {
         default_model_id="Qwen/Qwen2.5-VL-72B-Instruct",
         prompt_file="zamvision.txt",
         search_enabled=True,
+        routing_aliases=("ocr", "scan", "image", "photo", "object recognition", "translate document"),
+        routing_tags=("vision", "camera", "document"),
     ),
     "codekhana": FeatureSpec(
         name="codekhana",
         overview="Coding mentor for Python and web development.",
         default_model_id="Qwen/Qwen2.5-Coder-32B-Instruct",
         prompt_file="codekhana.txt",
+        routing_aliases=("python", "javascript", "coding", "programming", "web development", "debug"),
+        routing_tags=("html", "css", "bug", "developer"),
     ),
     "dehqan": FeatureSpec(
         name="dehqan",
@@ -47,6 +55,8 @@ FEATURE_SPECS = {
         default_model_id="meta-llama/Llama-3.3-70B-Instruct",
         prompt_file="dehqan.txt",
         search_enabled=True,
+        routing_aliases=("farm", "farming", "crop", "wheat", "irrigation", "pest", "fertilizer"),
+        routing_tags=("soil", "harvest", "livestock"),
     ),
     "tabib": FeatureSpec(
         name="tabib",
@@ -54,6 +64,8 @@ FEATURE_SPECS = {
         default_model_id="microsoft/Phi-4",
         prompt_file="tabib.txt",
         search_enabled=True,
+        routing_aliases=("symptom", "fever", "doctor", "medicine", "hospital", "triage"),
+        routing_tags=("health", "pain", "sick"),
     ),
     "hunar": FeatureSpec(
         name="hunar",
@@ -61,6 +73,8 @@ FEATURE_SPECS = {
         default_model_id="meta-llama/Llama-3.1-70B-Instruct",
         prompt_file="hunar.txt",
         tool_calling_enabled=True,
+        routing_aliases=("cv", "resume", "career", "job", "interview", "cover letter"),
+        routing_tags=("skills", "upskill", "employment"),
     ),
     "rahnama": FeatureSpec(
         name="rahnama",
@@ -68,6 +82,8 @@ FEATURE_SPECS = {
         default_model_id="meta-llama/Llama-3.1-70B-Instruct",
         prompt_file="rahnama.txt",
         search_enabled=True,
+        routing_aliases=("passport", "tazkira", "document", "application", "permit", "registration"),
+        routing_tags=("office", "service", "bill", "bank", "bureaucracy"),
     ),
     "education": FeatureSpec(
         name="education",
@@ -76,6 +92,8 @@ FEATURE_SPECS = {
         prompt_file="education.txt",
         search_enabled=True,
         tool_calling_enabled=True,
+        routing_aliases=("class", "grade", "homework", "lesson", "exam", "curriculum"),
+        routing_tags=("math", "physics", "chemistry", "biology", "study"),
     ),
 }
 

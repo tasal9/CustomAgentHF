@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from customagenthf.zeerak.agents import assemble_feature_task, run_feature
-from customagenthf.zeerak.policy import TABIB_SAFE_PROMPT
+from customagenthf.zeerak.policy import RAHNAMA_SAFE_PROMPT, TABIB_SAFE_PROMPT
 
 
 class FakeAgent:
@@ -83,7 +83,10 @@ class RunFeatureTests(unittest.TestCase):
         self.assertIn("[model] tabib-model", result)
 
     def test_auto_route_wrapper_matches_expected_snapshot(self) -> None:
-        with patch("customagenthf.zeerak.agents.route_feature", return_value=("codekhana", "Matched 3 keyword(s) for codekhana.")), patch(
+        with patch(
+            "customagenthf.zeerak.agents.route_feature",
+            return_value=("codekhana", "Matched score 9 for codekhana from 3 alias hit(s) and 0 tag hit(s)."),
+        ), patch(
             "customagenthf.zeerak.agents.load_feature_prompt", return_value="Prompt"
         ), patch("customagenthf.zeerak.agents.model_id_for_feature", return_value="primary-model"), patch(
             "customagenthf.zeerak.agents.build_agent", return_value=FakeAgent(response="Inner answer")
@@ -91,11 +94,26 @@ class RunFeatureTests(unittest.TestCase):
             result = run_feature("auto", "Help me debug Python")
 
         expected = (
-            "[router] Selected feature: codekhana. Matched 3 keyword(s) for codekhana.\n\n"
+            "[router] Selected feature: codekhana. Matched score 9 for codekhana from 3 alias hit(s) and 0 tag hit(s).\n\n"
             "[model] primary-model\n\n"
             "Inner answer"
         )
         self.assertEqual(result, expected)
+
+    def test_rahnama_payload_includes_policy_guidance(self) -> None:
+        agent = FakeAgent(response="Document guidance")
+
+        with patch("customagenthf.zeerak.agents.load_feature_prompt", return_value="Base rahnama prompt"), patch(
+            "customagenthf.zeerak.agents.model_id_for_feature", return_value="rahnama-model"
+        ), patch("customagenthf.zeerak.agents.build_agent", return_value=agent):
+            result = run_feature("rahnama", "How do I renew a passport?")
+
+        expected_task = assemble_feature_task(
+            f"Base rahnama prompt {RAHNAMA_SAFE_PROMPT}",
+            "How do I renew a passport?",
+        )
+        self.assertEqual(agent.tasks[0], expected_task)
+        self.assertIn("[model] rahnama-model", result)
 
     def test_tabib_emergency_short_circuits_before_agent_build(self) -> None:
         with patch("customagenthf.zeerak.agents.build_agent") as mocked_build_agent:

@@ -10,7 +10,7 @@ from .config import (
     model_fallback_id,
     model_id_for_feature,
 )
-from .policy import apply_tabib_policy
+from .policy import apply_rahnama_policy, apply_tabib_policy
 from .routing import route_feature
 
 
@@ -50,6 +50,9 @@ def run_feature(feature: str, task: str) -> str:
         if emergency:
             return tabib_payload
         prompt = f"{prompt} {tabib_payload}"
+
+    if feature == "rahnama":
+        prompt = f"{prompt} {apply_rahnama_policy(task)}"
 
     primary_model = model_id_for_feature(feature)
     agent = build_agent(feature, prefer_tool_calling=True, model_id=primary_model)

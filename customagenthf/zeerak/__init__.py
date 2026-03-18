@@ -5,12 +5,13 @@ from .cli import main, parse_args
 from .config import FEATURE_OVERVIEW, FeatureSpec, get_feature_spec, load_feature_prompt, model_fallback_id, model_id_for_feature
 from .features import list_features, search_features
 from .rendering import feature_capabilities, format_feature_summary, render_feature_json, render_feature_output, render_feature_table
-from .policy import apply_tabib_policy
+from .policy import apply_rahnama_policy, apply_tabib_policy
 from .routing import route_feature
 
 __all__ = [
     "FEATURE_OVERVIEW",
     "FeatureSpec",
+    "apply_rahnama_policy",
     "apply_tabib_policy",
     "assemble_feature_task",
     "build_agent",

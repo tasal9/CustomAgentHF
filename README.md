@@ -141,11 +141,17 @@ python examples/04_zeerak_feature_agents.py --feature auto --task "I need help w
 python examples/04_zeerak_feature_agents.py --feature chat --task "Respond in Dari and introduce yourself"
 python examples/04_zeerak_feature_agents.py --feature dehqan --task "Wheat pest control in Nangarhar this month"
 python examples/04_zeerak_feature_agents.py --feature hunar --task "Build a CV summary for junior web developer"
+python examples/04_zeerak_feature_agents.py --feature rahnama --task "What documents do I usually need to renew a passport?"
+python examples/04_zeerak_feature_agents.py --feature auto --task "How do I start a tazkira application in my province?"
 ```
 
 Tabib safety note:
 
 - If urgent keywords are detected (for example chest pain, breathing difficulty, severe bleeding, stroke, self-harm), the script returns an immediate emergency escalation template without calling the model.
+
+Rahnama safety note:
+
+- Rahnama gives practical process guidance, but for legal disputes, court matters, immigration status, or approval guarantees it adds a guardrail reminding users to verify rules with the relevant office or a qualified legal professional.
 
 ## Recommended Models Per Feature
 
@@ -157,6 +163,7 @@ Default model mapping in `examples/04_zeerak_feature_agents.py`:
 - `dehqan`: `meta-llama/Llama-3.3-70B-Instruct` (strong general reasoning for agriculture guidance).
 - `tabib`: `microsoft/Phi-4` (concise clinical-style reasoning with policy guardrails in script).
 - `hunar`: `meta-llama/Llama-3.1-70B-Instruct` (good structured writing for CV/interview content).
+- `rahnama`: `meta-llama/Llama-3.1-70B-Instruct` (strong general guidance for document and public-service workflows).
 - `education`: `Qwen/Qwen2.5-72B-Instruct` (strong tutoring/explainer quality).
 
 Override any default via environment variables in `.env`:

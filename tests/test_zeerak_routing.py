@@ -24,7 +24,7 @@ class RouteFeatureTests(unittest.TestCase):
         feature, reason = route_feature("I need Python debugging help for my HTML and CSS homework")
 
         self.assertEqual(feature, "codekhana")
-        self.assertIn("Matched", reason)
+        self.assertIn("Matched score", reason)
 
     def test_feature_metadata_is_typed_and_exposed(self) -> None:
         spec = get_feature_spec("education")
@@ -48,11 +48,17 @@ class RouteFeatureTests(unittest.TestCase):
     def test_search_features_matches_name_and_overview(self) -> None:
         by_name = search_features("tab")
         by_overview = search_features("curriculum")
-        by_new_feature = search_features("public services")
+        by_new_feature = search_features("passport")
 
         self.assertEqual([feature.name for feature in by_name], ["tabib"])
         self.assertEqual([feature.name for feature in by_overview], ["education"])
         self.assertEqual([feature.name for feature in by_new_feature], ["rahnama"])
+
+    def test_route_feature_uses_weighted_aliases_and_tags(self) -> None:
+        feature, reason = route_feature("I need help with a passport application and office registration")
+
+        self.assertEqual(feature, "rahnama")
+        self.assertIn("alias hit", reason)
 
     def test_render_feature_table_matches_expected_snapshot(self) -> None:
         features = search_features("curriculum")

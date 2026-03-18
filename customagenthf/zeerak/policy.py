@@ -1,4 +1,4 @@
-"""Policy checks for Zeerak health guidance."""
+"""Policy checks for Zeerak health and public-guidance features."""
 
 from typing import Tuple
 
@@ -28,6 +28,29 @@ TABIB_SAFE_PROMPT = (
     "Do not give a definitive diagnosis or medication dosage."
 )
 
+RAHNAMA_SENSITIVE_KEYWORDS = [
+    "lawsuit",
+    "court",
+    "legal advice",
+    "attorney",
+    "lawyer",
+    "guarantee approval",
+    "visa refusal",
+    "immigration decision",
+]
+
+RAHNAMA_SAFE_PROMPT = (
+    "Give practical document and process guidance in this structure: 1) likely purpose of the process, "
+    "2) common documents or information typically needed, 3) suggested next steps, 4) where local office rules may differ. "
+    "Do not claim guaranteed approvals, legal outcomes, or official policy certainty without verification."
+)
+
+RAHNAMA_SENSITIVE_PROMPT = (
+    "Treat the request as sensitive legal or administrative guidance. Provide general informational steps only, "
+    "state clearly that official rules can change, and advise verifying with the relevant office or a qualified legal professional "
+    "before acting on deadlines, appeals, immigration status, contracts, or court matters."
+)
+
 
 def apply_tabib_policy(task: str) -> Tuple[bool, str]:
     lowered = task.lower()
@@ -36,3 +59,12 @@ def apply_tabib_policy(task: str) -> Tuple[bool, str]:
         return True, TABIB_EMERGENCY_TEMPLATE
 
     return False, TABIB_SAFE_PROMPT
+
+
+def apply_rahnama_policy(task: str) -> str:
+    lowered = task.lower()
+
+    if any(keyword in lowered for keyword in RAHNAMA_SENSITIVE_KEYWORDS):
+        return RAHNAMA_SENSITIVE_PROMPT
+
+    return RAHNAMA_SAFE_PROMPT
