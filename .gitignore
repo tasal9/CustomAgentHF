@@ -9,3 +9,11 @@
 # Local virtual environments
 .venv/
 .venv-py39-backup/
+
+# Build artifacts and caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.pytest_cache/

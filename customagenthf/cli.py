@@ -62,6 +62,23 @@ def build_parser() -> argparse.ArgumentParser:
     )
     zeerak_parser.add_argument("--task", help="User task or question.")
 
+    output_mode_group = zeerak_parser.add_mutually_exclusive_group()
+    output_mode_group.add_argument(
+        "--plain-text",
+        action="store_true",
+        default=False,
+        help=(
+            "Force plain-text output for the feature answer, even on wide terminals. "
+            "Useful for SMS, WhatsApp copy/paste, or logging pipelines."
+        ),
+    )
+    output_mode_group.add_argument(
+        "--markdown",
+        action="store_true",
+        default=False,
+        help="Force markdown output for the feature answer, even on narrow terminals.",
+    )
+
     return parser
 
 
@@ -106,6 +123,10 @@ def main(argv: list[str] | None = None) -> None:
             zeerak_args.extend(["--feature", args.feature])
         if args.task:
             zeerak_args.extend(["--task", args.task])
+        if args.plain_text:
+            zeerak_args.append("--plain-text")
+        if args.markdown:
+            zeerak_args.append("--markdown")
         zeerak_main(zeerak_args)
         return
 
