@@ -15,7 +15,7 @@ from .config import (
     model_fallback_id,
     model_id_for_feature,
 )
-from .formatting import format_feature_answer
+from .formatting import OUTPUT_MODE_AUTO, format_feature_answer
 from .policy import apply_rahnama_policy, apply_tabib_policy
 from .routing import route_feature
 
@@ -30,6 +30,14 @@ class AgentAttempt:
 
 class ProviderAccessDeniedError(RuntimeError):
     """Raised when a provider denies access to the selected model."""
+
+
+class RateLimitError(RuntimeError):
+    """Raised when the provider signals a rate-limit or quota error."""
+
+
+class TransientNetworkError(RuntimeError):
+    """Raised on transient network or service-unavailability errors."""
 
 
 def build_agent(feature: str, prefer_tool_calling: bool = True, model_id: str | None = None):
@@ -90,12 +98,24 @@ def _should_emit_attempt_output(feature: str) -> bool:
     return feature != "rahnama"
 
 
+RATE_LIMIT_ERROR_PATTERNS = ("429", "rate limit", "quota", "too many requests")
+TRANSIENT_ERROR_PATTERNS = ("502", "503", "504", "service unavailable", "connection error", "timeout", "read timed out")
+
+
 def _is_bad_request_error(error_text: str) -> bool:
     return "bad request" in error_text or "400" in error_text
 
 
 def _is_provider_access_error(error_text: str) -> bool:
     return "403" in error_text or "forbidden" in error_text or "provider" in error_text
+
+
+def _is_rate_limit_error(error_text: str) -> bool:
+    return any(pattern in error_text for pattern in RATE_LIMIT_ERROR_PATTERNS)
+
+
+def _is_transient_error(error_text: str) -> bool:
+    return any(pattern in error_text for pattern in TRANSIENT_ERROR_PATTERNS)
 
 
 def _run_with_model_retries(feature: str, full_task: str, model_id: str) -> str:
@@ -106,8 +126,15 @@ def _run_with_model_retries(feature: str, full_task: str, model_id: str) -> str:
         return preferred_attempt.answer or ""
 
     preferred_error_text = str(preferred_attempt.error).lower()
+
     if _is_provider_access_error(preferred_error_text):
         raise ProviderAccessDeniedError(str(preferred_attempt.error)) from preferred_attempt.error
+
+    if _is_rate_limit_error(preferred_error_text):
+        raise RateLimitError(str(preferred_attempt.error)) from preferred_attempt.error
+
+    if _is_transient_error(preferred_error_text):
+        raise TransientNetworkError(str(preferred_attempt.error)) from preferred_attempt.error
 
     if _is_bad_request_error(preferred_error_text):
         fallback_attempt = _run_agent_attempt(feature, full_task, model_id, prefer_tool_calling=False)
@@ -125,10 +152,15 @@ def _run_with_model_retries(feature: str, full_task: str, model_id: str) -> str:
     raise preferred_attempt.error
 
 
-def run_feature(feature: str, task: str, max_width: int | None = None) -> str:
+def run_feature(
+    feature: str,
+    task: str,
+    max_width: int | None = None,
+    output_mode: str = OUTPUT_MODE_AUTO,
+) -> str:
     if feature == "auto":
         selected_feature, reason = route_feature(task)
-        answer = run_feature(selected_feature, task, max_width=max_width)
+        answer = run_feature(selected_feature, task, max_width=max_width, output_mode=output_mode)
         return f"[router] Selected feature: {selected_feature}. {reason}\n\n{answer}"
 
     prompt = load_feature_prompt(feature)
@@ -149,15 +181,22 @@ def run_feature(feature: str, task: str, max_width: int | None = None) -> str:
 
     try:
         answer = _run_with_model_retries(feature, full_task, primary_model)
-    except ProviderAccessDeniedError:
+    except (ProviderAccessDeniedError, RateLimitError, TransientNetworkError) as exc:
         used_model = model_fallback_id()
         if used_model == primary_model:
             raise RuntimeError(
                 f"Provider denied access to model '{primary_model}', and no distinct fallback model is configured."
-            )
+            ) from exc
+
+        if isinstance(exc, RateLimitError):
+            note_reason = f"Rate limit reached for {primary_model}."
+        elif isinstance(exc, TransientNetworkError):
+            note_reason = f"Transient network error for {primary_model}."
+        else:
+            note_reason = f"Provider denied access to {primary_model}."
 
         answer = _run_with_model_retries(feature, full_task, used_model)
-        fallback_note = f"[fallback] Provider denied access to {primary_model}. Retried with {used_model}.\n\n"
+        fallback_note = f"[fallback] {note_reason} Retried with {used_model}.\n\n"
 
-    formatted_answer = format_feature_answer(feature, answer, max_width=max_width)
+    formatted_answer = format_feature_answer(feature, answer, max_width=max_width, output_mode=output_mode)
     return f"{fallback_note}[model] {used_model}\n\n{formatted_answer}"

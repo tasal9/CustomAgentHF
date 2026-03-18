@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from .agents import run_feature
 from .config import FEATURE_OVERVIEW
 from .features import list_features, search_features
+from .formatting import OUTPUT_MODE_AUTO, OUTPUT_MODE_MARKDOWN, OUTPUT_MODE_PLAIN
 from .rendering import render_feature_output
 
 
@@ -47,6 +48,26 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         "--task",
         help="User task/question for the selected feature.",
     )
+
+    output_mode_group = parser.add_mutually_exclusive_group()
+    output_mode_group.add_argument(
+        "--plain-text",
+        action="store_true",
+        default=False,
+        help=(
+            "Force plain-text output for the feature answer, even on wide terminals. "
+            "Useful for SMS, WhatsApp copy/paste, or logging pipelines."
+        ),
+    )
+    output_mode_group.add_argument(
+        "--markdown",
+        action="store_true",
+        default=False,
+        help=(
+            "Force markdown output for the feature answer, even on narrow terminals."
+        ),
+    )
+
     args = parser.parse_args(argv)
 
     if args.list_features and args.search_features:
@@ -99,8 +120,15 @@ def main(argv: list[str] | None = None) -> None:
         )
         return
 
+    if args.plain_text:
+        output_mode = OUTPUT_MODE_PLAIN
+    elif args.markdown:
+        output_mode = OUTPUT_MODE_MARKDOWN
+    else:
+        output_mode = OUTPUT_MODE_AUTO
+
     print(f"[feature] {args.feature}: {FEATURE_OVERVIEW[args.feature]}")
 
-    answer = run_feature(args.feature, args.task, max_width=terminal_width)
+    answer = run_feature(args.feature, args.task, max_width=terminal_width, output_mode=output_mode)
     print("\n[answer]")
     print(answer)

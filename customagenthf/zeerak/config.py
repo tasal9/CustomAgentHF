@@ -1,7 +1,7 @@
 """Static configuration and model selection for Zeerak feature agents."""
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 from importlib import resources
 
@@ -16,6 +16,9 @@ class FeatureSpec:
     tool_calling_enabled: bool = False
     routing_aliases: tuple[str, ...] = ()
     routing_tags: tuple[str, ...] = ()
+    routing_negative_signals: tuple[str, ...] = ()
+    routing_alias_weight: int | None = None
+    routing_tag_weight: int | None = None
 
 
 FEATURE_SPECS = {
@@ -66,6 +69,7 @@ FEATURE_SPECS = {
         search_enabled=True,
         routing_aliases=("symptom", "fever", "doctor", "medicine", "hospital", "triage"),
         routing_tags=("health", "pain", "sick"),
+        routing_negative_signals=("lawsuit", "legal", "attorney", "court", "coding", "python"),
     ),
     "hunar": FeatureSpec(
         name="hunar",
@@ -75,6 +79,7 @@ FEATURE_SPECS = {
         tool_calling_enabled=True,
         routing_aliases=("cv", "resume", "career", "job", "interview", "cover letter"),
         routing_tags=("skills", "upskill", "employment"),
+        routing_negative_signals=("coding", "python", "symptom", "doctor"),
     ),
     "rahnama": FeatureSpec(
         name="rahnama",
@@ -84,6 +89,7 @@ FEATURE_SPECS = {
         search_enabled=True,
         routing_aliases=("passport", "tazkira", "document", "application", "permit", "registration"),
         routing_tags=("office", "service", "bill", "bank", "bureaucracy"),
+        routing_negative_signals=("symptom", "fever", "coding", "python"),
     ),
     "education": FeatureSpec(
         name="education",
@@ -94,12 +100,17 @@ FEATURE_SPECS = {
         tool_calling_enabled=True,
         routing_aliases=("class", "grade", "homework", "lesson", "exam", "curriculum"),
         routing_tags=("math", "physics", "chemistry", "biology", "study"),
+        routing_negative_signals=("coding", "python", "symptom", "passport"),
     ),
 }
 
 FEATURE_OVERVIEW = {name: spec.overview for name, spec in FEATURE_SPECS.items()}
 
 GLOBAL_FALLBACK_MODEL = "Qwen/Qwen3-Next-80B-A3B-Thinking"
+
+# Minimum confidence score (alias+tag hits) required to route to a feature.
+# Tasks scoring below this threshold default to "chat".
+ROUTING_CONFIDENCE_THRESHOLD = 2
 
 EXECUTION_STYLE_GUIDANCE = (
     "When writing action code: avoid escaped triple quotes like \\\"\\\"\\\". "
