@@ -198,8 +198,8 @@ class RunFeatureTests(unittest.TestCase):
 
         expected = (
             "LIKELY PURPOSE\n\n"
-            "Renewing a passport helps with travel and\n"
-            "identity verification.\n\n"
+            "Renewing a passport helps with travel\n"
+            "and identity verification.\n\n"
             "SUGGESTED NEXT STEPS\n\n"
             "- Visit the nearest passport office with\n"
             "  your documents.\n"
