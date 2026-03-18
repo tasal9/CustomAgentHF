@@ -62,6 +62,13 @@ FEATURE_SPECS = {
         prompt_file="hunar.txt",
         tool_calling_enabled=True,
     ),
+    "rahnama": FeatureSpec(
+        name="rahnama",
+        overview="Public services, documents, and everyday guidance for Afghan users.",
+        default_model_id="meta-llama/Llama-3.1-70B-Instruct",
+        prompt_file="rahnama.txt",
+        search_enabled=True,
+    ),
     "education": FeatureSpec(
         name="education",
         overview="Curriculum-aligned tutoring for Afghan classes 6-12.",

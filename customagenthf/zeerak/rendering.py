@@ -80,7 +80,11 @@ def _fit_widths(rows: list[list[str]], max_width: int | None) -> list[int]:
     return widths
 
 
-def render_feature_table(features: list[FeatureSpec], max_width: int | None = None) -> str:
+def render_feature_table(
+    features: list[FeatureSpec],
+    max_width: int | None = None,
+    truncate: bool = True,
+) -> str:
     rows = [
         [
             feature.name,
@@ -91,13 +95,23 @@ def render_feature_table(features: list[FeatureSpec], max_width: int | None = No
         for feature in features
     ]
 
-    widths = _fit_widths(rows, max_width=max_width)
+    if truncate:
+        widths = _fit_widths(rows, max_width=max_width)
+    else:
+        widths = [len(header) for header in DISCOVERY_HEADERS]
+        for row in rows:
+            for index, cell in enumerate(row):
+                widths[index] = max(widths[index], len(cell))
 
     def format_row(row: list[str]) -> str:
         cells = []
         for index, cell in enumerate(row):
-            cells.append(_truncate_cell(cell, widths[index]).ljust(widths[index]))
-        return " | ".join(cells)
+            if truncate:
+                rendered = _truncate_cell(cell, widths[index])
+            else:
+                rendered = cell
+            cells.append(rendered.ljust(widths[index]))
+        return " | ".join(cells).rstrip()
 
     separator = "-+-".join("-" * width for width in widths)
     table_rows = [format_row(DISCOVERY_HEADERS), separator]
@@ -105,7 +119,12 @@ def render_feature_table(features: list[FeatureSpec], max_width: int | None = No
     return "\n".join(table_rows)
 
 
-def render_feature_output(features: list[FeatureSpec], output_format: str, max_width: int | None = None) -> str:
+def render_feature_output(
+    features: list[FeatureSpec],
+    output_format: str,
+    max_width: int | None = None,
+    truncate: bool = True,
+) -> str:
     if output_format == "json":
         return render_feature_json(features)
-    return render_feature_table(features, max_width=max_width)
+    return render_feature_table(features, max_width=max_width, truncate=truncate)

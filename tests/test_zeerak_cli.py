@@ -30,11 +30,39 @@ class ZeerakCliTests(unittest.TestCase):
         self.assertTrue(all(len(line) <= 80 for line in lines))
         self.assertIn("...", completed.stdout)
 
+    def test_list_features_no_truncate_prints_full_width(self) -> None:
+        completed = self.run_cli("--list-features", "--no-truncate")
+
+        self.assertEqual(completed.returncode, 0, msg=completed.stderr)
+        self.assertIn("Public services, documents, and everyday guidance for Afghan users.", completed.stdout)
+        self.assertNotIn("...", completed.stdout)
+
     def test_max_width_rejected_for_json_output(self) -> None:
         completed = self.run_cli("--search-features", "curriculum", "--output", "json", "--max-width", "80")
 
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn("--max-width can only be used with --output table", completed.stderr)
+
+    def test_no_truncate_rejected_for_json_output(self) -> None:
+        completed = self.run_cli("--search-features", "curriculum", "--output", "json", "--no-truncate")
+
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("--no-truncate can only be used with --output table", completed.stderr)
+
+    def test_help_output_mentions_discovery_options(self) -> None:
+        completed = self.run_cli("--help")
+
+        self.assertEqual(completed.returncode, 0, msg=completed.stderr)
+        self.assertIn("--search-features", completed.stdout)
+        self.assertIn("--output", completed.stdout)
+        self.assertIn("--max-width", completed.stdout)
+        self.assertIn("--no-truncate", completed.stdout)
+
+    def test_list_and_search_features_are_mutually_exclusive(self) -> None:
+        completed = self.run_cli("--list-features", "--search-features", "curriculum")
+
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("cannot be used together", completed.stderr)
 
 
 if __name__ == "__main__":

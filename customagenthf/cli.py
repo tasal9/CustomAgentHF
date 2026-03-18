@@ -51,6 +51,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum table width for feature discovery output.",
     )
     zeerak_parser.add_argument(
+        "--no-truncate",
+        action="store_true",
+        help="Disable truncation and print full-width discovery tables.",
+    )
+    zeerak_parser.add_argument(
         "--feature",
         choices=sorted(FEATURE_OVERVIEW.keys()),
         help="Zeerak feature mode to run.",
@@ -95,6 +100,8 @@ def main(argv: list[str] | None = None) -> None:
             zeerak_args.extend(["--output", args.output])
         if args.max_width is not None:
             zeerak_args.extend(["--max-width", str(args.max_width)])
+        if args.no_truncate:
+            zeerak_args.append("--no-truncate")
         if args.feature:
             zeerak_args.extend(["--feature", args.feature])
         if args.task:

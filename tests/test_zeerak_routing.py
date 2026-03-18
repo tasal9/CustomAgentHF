@@ -48,25 +48,27 @@ class RouteFeatureTests(unittest.TestCase):
     def test_search_features_matches_name_and_overview(self) -> None:
         by_name = search_features("tab")
         by_overview = search_features("curriculum")
+        by_new_feature = search_features("public services")
 
         self.assertEqual([feature.name for feature in by_name], ["tabib"])
         self.assertEqual([feature.name for feature in by_overview], ["education"])
+        self.assertEqual([feature.name for feature in by_new_feature], ["rahnama"])
 
     def test_render_feature_table_matches_expected_snapshot(self) -> None:
         features = search_features("curriculum")
 
         expected = (
-            "feature   | capabilities         | default-model             | overview                                            \n"
+            "feature   | capabilities         | default-model             | overview\n"
             "----------+----------------------+---------------------------+-----------------------------------------------------\n"
             "education | search, tool-calling | Qwen/Qwen2.5-72B-Instruct | Curriculum-aligned tutoring for Afghan classes 6-12."
         )
-        self.assertEqual(render_feature_table(features), expected)
+        self.assertEqual(render_feature_table(features, max_width=200), expected)
 
     def test_render_feature_table_truncates_for_narrow_width(self) -> None:
         features = list_features()
 
         expected = (
-            "feature   | capabilities | default-model | overview            \n"
+            "feature   | capabilities | default-model | overview\n"
             "----------+--------------+---------------+---------------------\n"
             "auto      | -            | -             | Auto-route user i...\n"
             "chat      | tool-calling | CohereForA... | Conversational AI...\n"
@@ -75,9 +77,17 @@ class RouteFeatureTests(unittest.TestCase):
             "dehqan    | search       | meta-llama... | Agriculture assis...\n"
             "tabib     | search       | microsoft/... | Health triage and...\n"
             "hunar     | tool-calling | meta-llama... | Skills guidance a...\n"
+            "rahnama   | search       | meta-llama... | Public services, ...\n"
             "education | search, t... | Qwen/Qwen2... | Curriculum-aligne..."
         )
         self.assertEqual(render_feature_table(features, max_width=60), expected)
+
+    def test_render_feature_table_no_truncate_preserves_full_content(self) -> None:
+        features = search_features("public services")
+
+        rendered = render_feature_table(features, truncate=False)
+        self.assertIn("Public services, documents, and everyday guidance for Afghan users.", rendered)
+        self.assertNotIn("...", rendered)
 
     def test_render_feature_json_matches_expected_snapshot(self) -> None:
         features = search_features("curriculum")

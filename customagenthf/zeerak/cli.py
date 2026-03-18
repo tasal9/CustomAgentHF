@@ -34,6 +34,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Maximum table width for feature discovery output.",
     )
     parser.add_argument(
+        "--no-truncate",
+        action="store_true",
+        help="Disable truncation and print full-width discovery tables.",
+    )
+    parser.add_argument(
         "--feature",
         choices=sorted(FEATURE_OVERVIEW.keys()),
         help="Zeerak feature mode to run (use 'auto' for routing).",
@@ -56,6 +61,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     if args.max_width is not None and args.output != "table":
         parser.error("--max-width can only be used with --output table")
 
+    if args.no_truncate and args.output != "table":
+        parser.error("--no-truncate can only be used with --output table")
+
     if not args.list_features and not args.search_features and (not args.feature or not args.task):
         parser.error("the following arguments are required: --feature, --task")
 
@@ -70,11 +78,25 @@ def main(argv: list[str] | None = None) -> None:
         terminal_width = shutil.get_terminal_size(fallback=(120, 24)).columns
 
     if args.list_features:
-        print(render_feature_output(list_features(), output_format=args.output, max_width=terminal_width))
+        print(
+            render_feature_output(
+                list_features(),
+                output_format=args.output,
+                max_width=terminal_width,
+                truncate=not args.no_truncate,
+            )
+        )
         return
 
     if args.search_features:
-        print(render_feature_output(search_features(args.search_features), output_format=args.output, max_width=terminal_width))
+        print(
+            render_feature_output(
+                search_features(args.search_features),
+                output_format=args.output,
+                max_width=terminal_width,
+                truncate=not args.no_truncate,
+            )
+        )
         return
 
     print(f"[feature] {args.feature}: {FEATURE_OVERVIEW[args.feature]}")

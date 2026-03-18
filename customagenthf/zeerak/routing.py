@@ -56,6 +56,18 @@ ROUTER_KEYWORDS: Dict[str, List[str]] = {
         "upskill",
         "cover letter",
     ],
+    "rahnama": [
+        "passport",
+        "tazkira",
+        "document",
+        "application",
+        "office",
+        "service",
+        "registration",
+        "bill",
+        "bank",
+        "permit",
+    ],
     "education": [
         "class",
         "grade",

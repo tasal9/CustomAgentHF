@@ -61,6 +61,7 @@ python -m customagenthf search
 python -m customagenthf backends --backend hf
 python -m customagenthf zeerak --list-features
 python -m customagenthf zeerak --list-features --max-width 80
+python -m customagenthf zeerak --list-features --no-truncate
 python -m customagenthf zeerak --search-features curriculum
 python -m customagenthf zeerak --search-features curriculum --output json
 python -m customagenthf zeerak --feature auto --task "Help me write a junior developer CV"
@@ -96,6 +97,7 @@ print(run_search_task("What is the weather in Kabul today?"))
 print([feature.name for feature in list_features(include_auto=False)])
 print([feature.name for feature in search_features("curriculum")])
 print(render_feature_table(search_features("curriculum")))
+print(render_feature_table(search_features("passport"), truncate=False))
 print(render_feature_json(search_features("curriculum")))
 print(run_feature("codekhana", "Explain Python functions with two short exercises"))
 ```
@@ -129,6 +131,7 @@ Use the Zeerak launcher with one of these `--feature` values:
 - `dehqan`: farming support and crop advice.
 - `tabib`: symptom triage guidance with emergency escalation templates.
 - `hunar`: skills roadmap and CV builder.
+- `rahnama`: public services, documents, and practical daily guidance.
 - `education`: class 6-12 tutoring support.
 
 Examples:
