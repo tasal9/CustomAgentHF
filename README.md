@@ -186,6 +186,7 @@ Fallback behavior:
 Rahnama formatting note:
 
 - Rahnama responses are post-formatted into cleaner markdown sections so document and process guidance reads more cleanly in the CLI.
+- On narrow terminals, those Rahnama sections are rendered as wrapped plain text so headings and bullet points stay readable without awkward markdown wrapping.
 
 ## Notes
 

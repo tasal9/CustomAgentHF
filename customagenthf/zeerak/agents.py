@@ -125,10 +125,10 @@ def _run_with_model_retries(feature: str, full_task: str, model_id: str) -> str:
     raise preferred_attempt.error
 
 
-def run_feature(feature: str, task: str) -> str:
+def run_feature(feature: str, task: str, max_width: int | None = None) -> str:
     if feature == "auto":
         selected_feature, reason = route_feature(task)
-        answer = run_feature(selected_feature, task)
+        answer = run_feature(selected_feature, task, max_width=max_width)
         return f"[router] Selected feature: {selected_feature}. {reason}\n\n{answer}"
 
     prompt = load_feature_prompt(feature)
@@ -159,5 +159,5 @@ def run_feature(feature: str, task: str) -> str:
         answer = _run_with_model_retries(feature, full_task, used_model)
         fallback_note = f"[fallback] Provider denied access to {primary_model}. Retried with {used_model}.\n\n"
 
-    formatted_answer = format_feature_answer(feature, answer)
+    formatted_answer = format_feature_answer(feature, answer, max_width=max_width)
     return f"{fallback_note}[model] {used_model}\n\n{formatted_answer}"

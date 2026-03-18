@@ -4,7 +4,7 @@ from io import StringIO
 from unittest.mock import patch
 
 from customagenthf.zeerak.agents import assemble_feature_task, run_feature
-from customagenthf.zeerak.formatting import format_rahnama_answer
+from customagenthf.zeerak.formatting import format_rahnama_answer, render_rahnama_plain_text
 from customagenthf.zeerak.policy import RAHNAMA_SAFE_PROMPT, TABIB_SAFE_PROMPT
 
 
@@ -186,6 +186,45 @@ class RunFeatureTests(unittest.TestCase):
         self.assertIn("## Likely Purpose", result)
         self.assertIn("## Suggested Next Steps", result)
         self.assertNotIn("1. Likely purpose", result)
+
+    def test_render_rahnama_plain_text_wraps_headings_and_bullets(self) -> None:
+        markdown = (
+            "## Likely Purpose\n"
+            "Renewing a passport helps with travel and identity verification.\n\n"
+            "## Suggested Next Steps\n"
+            "- Visit the nearest passport office with your documents.\n"
+            "- Confirm local processing times before you go."
+        )
+
+        expected = (
+            "LIKELY PURPOSE\n\n"
+            "Renewing a passport helps with travel and\n"
+            "identity verification.\n\n"
+            "SUGGESTED NEXT STEPS\n\n"
+            "- Visit the nearest passport office with\n"
+            "  your documents.\n"
+            "- Confirm local processing times before\n"
+            "  you go."
+        )
+
+        self.assertEqual(render_rahnama_plain_text(markdown, width=40), expected)
+
+    def test_rahnama_run_feature_uses_plain_text_for_narrow_width(self) -> None:
+        raw_answer = (
+            "1. Likely purpose of the process: Renewing a passport helps with travel and identity verification.\n\n"
+            "3. Suggested next steps:\n"
+            "- Visit the nearest passport office with your documents."
+        )
+        agent = FakeAgent(response=raw_answer)
+
+        with patch("customagenthf.zeerak.agents.load_feature_prompt", return_value="Base rahnama prompt"), patch(
+            "customagenthf.zeerak.agents.model_id_for_feature", return_value="rahnama-model"
+        ), patch("customagenthf.zeerak.agents.build_agent", return_value=agent):
+            result = run_feature("rahnama", "How do I renew a passport?", max_width=40)
+
+        self.assertIn("LIKELY PURPOSE", result)
+        self.assertIn("SUGGESTED NEXT STEPS", result)
+        self.assertNotIn("## Likely Purpose", result)
 
     def test_rahnama_run_feature_suppresses_agent_transcript_noise(self) -> None:
         agent = FakeAgent(

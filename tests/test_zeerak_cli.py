@@ -1,7 +1,13 @@
 import json
+import os
 import subprocess
 import sys
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
+from unittest.mock import patch
+
+from customagenthf.zeerak.cli import main
 
 
 class ZeerakCliTests(unittest.TestCase):
@@ -11,6 +17,7 @@ class ZeerakCliTests(unittest.TestCase):
             check=False,
             capture_output=True,
             text=True,
+            env={**os.environ, "PYTHONPATH": os.getcwd()},
         )
 
     def test_search_features_json_output_is_machine_readable(self) -> None:
@@ -67,6 +74,19 @@ class ZeerakCliTests(unittest.TestCase):
         self.assertIn("[answer]", completed.stdout)
         answer_index = completed.stdout.index("[answer]")
         self.assertNotIn("[model]", completed.stdout[:answer_index])
+
+    def test_rahnama_narrow_terminal_uses_plain_text_sections(self) -> None:
+        captured_stdout = StringIO()
+
+        with patch("customagenthf.zeerak.cli.shutil.get_terminal_size", return_value=os.terminal_size((40, 24))), patch(
+            "customagenthf.zeerak.cli.run_feature",
+            return_value="[model] rahnama-model\n\nLIKELY PURPOSE\n\nRenewing a passport helps with travel and identity verification.",
+        ), redirect_stdout(captured_stdout):
+            main(["--feature", "rahnama", "--task", "passport"])
+
+        output = captured_stdout.getvalue()
+        self.assertIn("[answer]", output)
+        self.assertIn("LIKELY PURPOSE", output)
 
     def test_list_and_search_features_are_mutually_exclusive(self) -> None:
         completed = self.run_cli("--list-features", "--search-features", "curriculum")

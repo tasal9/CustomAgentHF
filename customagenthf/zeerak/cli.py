@@ -6,7 +6,7 @@ import shutil
 from dotenv import load_dotenv
 
 from .agents import run_feature
-from .config import FEATURE_OVERVIEW, model_id_for_feature
+from .config import FEATURE_OVERVIEW
 from .features import list_features, search_features
 from .rendering import render_feature_output
 
@@ -74,7 +74,7 @@ def main(argv: list[str] | None = None) -> None:
     load_dotenv()
     args = parse_args(argv)
     terminal_width = args.max_width
-    if terminal_width is None and args.output == "table":
+    if terminal_width is None:
         terminal_width = shutil.get_terminal_size(fallback=(120, 24)).columns
 
     if args.list_features:
@@ -101,6 +101,6 @@ def main(argv: list[str] | None = None) -> None:
 
     print(f"[feature] {args.feature}: {FEATURE_OVERVIEW[args.feature]}")
 
-    answer = run_feature(args.feature, args.task)
+    answer = run_feature(args.feature, args.task, max_width=terminal_width)
     print("\n[answer]")
     print(answer)
