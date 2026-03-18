@@ -104,17 +104,17 @@ Example JSON payload from `python -m customagenthf zeerak --search-features curr
 
 ```json
 [
-	{
-		"name": "education",
-		"overview": "Curriculum-aligned tutoring for Afghan classes 6-12.",
-		"default_model_id": "Qwen/Qwen2.5-72B-Instruct",
-		"search_enabled": true,
-		"tool_calling_enabled": true,
-		"capabilities": [
-			"search",
-			"tool-calling"
-		]
-	}
+    {
+        "name": "education",
+        "overview": "Curriculum-aligned tutoring for Afghan classes 6-12.",
+        "default_model_id": "Qwen/Qwen2.5-72B-Instruct",
+        "search_enabled": true,
+        "tool_calling_enabled": true,
+        "capabilities": [
+            "search",
+            "tool-calling"
+        ]
+    }
 ]
 ```
 

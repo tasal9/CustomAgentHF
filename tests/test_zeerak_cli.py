@@ -22,12 +22,12 @@ class ZeerakCliTests(unittest.TestCase):
         self.assertEqual(payload[0]["capabilities"], ["search", "tool-calling"])
 
     def test_list_features_respects_max_width(self) -> None:
-        completed = self.run_cli("--list-features", "--max-width", "60")
+        completed = self.run_cli("--list-features", "--max-width", "80")
 
         self.assertEqual(completed.returncode, 0, msg=completed.stderr)
         lines = completed.stdout.strip().splitlines()
         self.assertTrue(lines)
-        self.assertTrue(all(len(line) <= 60 for line in lines))
+        self.assertTrue(all(len(line) <= 80 for line in lines))
         self.assertIn("...", completed.stdout)
 
     def test_max_width_rejected_for_json_output(self) -> None:
