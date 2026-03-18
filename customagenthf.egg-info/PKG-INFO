@@ -1,46 +1,4 @@
-Metadata-Version: 2.4
-Name: customagenthf
-Version: 0.1.0
-Summary: Reusable smolagents starter package with Zeerak feature agents
-Requires-Python: >=3.10
-Description-Content-Type: text/markdown
-Requires-Dist: smolagents[toolkit]
-Requires-Dist: python-dotenv
-Provides-Extra: litellm
-Requires-Dist: smolagents[litellm]; extra == "litellm"
-Provides-Extra: transformers
-Requires-Dist: smolagents[transformers]; extra == "transformers"
 
-# smolagents Starter Workspace
-
-This workspace contains a minimal, runnable setup for building agents with `smolagents`, now organized as a reusable Python package.
-
-## What is smolagents?
-
-`smolagents` is an open-source Python library for building and running LLM agents with very little code.
-
-Key strengths:
-
-- Simplicity: lightweight abstractions and small core.
-- Code-first agents: `CodeAgent` writes executable Python actions.
-- Tool-calling support: `ToolCallingAgent` for JSON/text style function calling.
-- Model-agnostic: supports Hugging Face Inference, LiteLLM providers, Transformers, and more.
-- Tool-agnostic: can integrate MCP tools, LangChain tools, and Hub Spaces.
-- Multimodal support: text, vision, video, and audio use cases.
-
-## Quickstart
-
-### 1. Create and activate a virtual environment
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-### 2. Install the package and dependencies
-
-```bash
-pip install -r requirements.txt
 ```
 
 This installs the project in editable mode via `requirements.txt`, so both the reusable package and the example scripts work from the repository checkout.
