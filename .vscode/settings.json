@@ -1,0 +1,19 @@
+{
+  "codacy.cli.analysisMode": "only on saved files",
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.analysis.exclude": [
+    "**/.venv/**",
+    "**/.venv-py39-backup/**",
+    "**/.codacy/**"
+  ],
+  "search.exclude": {
+    "**/.venv/**": true,
+    "**/.venv-py39-backup/**": true,
+    "**/.codacy/**": true
+  },
+  "files.watcherExclude": {
+    "**/.venv/**": true,
+    "**/.venv-py39-backup/**": true,
+    "**/.codacy/**": true
+  }
+}
