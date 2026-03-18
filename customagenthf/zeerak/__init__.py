@@ -1,6 +1,6 @@
 """Public Zeerak API."""
 
-from .agents import assemble_feature_task, build_agent, run_feature
+from .agents import FeatureRunResult, assemble_feature_task, build_agent, run_feature, run_feature_result
 from .cli import main, parse_args
 from .config import FEATURE_OVERVIEW, FeatureSpec, get_feature_spec, load_feature_prompt, model_fallback_id, model_id_for_feature
 from .features import list_features, search_features
@@ -36,6 +36,7 @@ __all__ = [
     "OUTPUT_MODE_MARKDOWN",
     "OUTPUT_MODE_PLAIN",
     "EducationResponse",
+    "FeatureRunResult",
     "HunarResponse",
     "RahnamaResponse",
     "TabibResponse",
@@ -67,5 +68,6 @@ __all__ = [
     "render_feature_output",
     "render_feature_table",
     "run_feature",
+    "run_feature_result",
     "search_features",
 ]

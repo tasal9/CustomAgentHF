@@ -18,6 +18,12 @@ from .config import (
 from .formatting import OUTPUT_MODE_AUTO, format_feature_answer
 from .policy import apply_rahnama_policy, apply_tabib_policy
 from .routing import route_feature
+from .schemas import (
+    parse_education_response,
+    parse_hunar_response,
+    parse_rahnama_response,
+    parse_tabib_response,
+)
 
 
 @dataclass(frozen=True)
@@ -26,6 +32,18 @@ class AgentAttempt:
     error: Exception | None
     stdout: str
     stderr: str
+
+
+@dataclass(frozen=True)
+class FeatureRunResult:
+    requested_feature: str
+    feature: str
+    model: str
+    raw_answer: str
+    formatted_answer: str
+    structured: dict[str, str] | None
+    fallback_note: str | None = None
+    route_reason: str | None = None
 
 
 class ProviderAccessDeniedError(RuntimeError):
@@ -38,6 +56,18 @@ class RateLimitError(RuntimeError):
 
 class TransientNetworkError(RuntimeError):
     """Raised on transient network or service-unavailability errors."""
+
+
+def _parse_structured_payload(feature: str, formatted_answer: str) -> dict[str, str] | None:
+    if feature == "rahnama":
+        return parse_rahnama_response(formatted_answer).__dict__
+    if feature == "tabib":
+        return parse_tabib_response(formatted_answer).__dict__
+    if feature == "hunar":
+        return parse_hunar_response(formatted_answer).__dict__
+    if feature == "education":
+        return parse_education_response(formatted_answer).__dict__
+    return None
 
 
 def build_agent(feature: str, prefer_tool_calling: bool = True, model_id: str | None = None):
@@ -152,23 +182,33 @@ def _run_with_model_retries(feature: str, full_task: str, model_id: str) -> str:
     raise preferred_attempt.error
 
 
-def run_feature(
+def run_feature_result(
     feature: str,
     task: str,
     max_width: int | None = None,
     output_mode: str = OUTPUT_MODE_AUTO,
-) -> str:
+) -> FeatureRunResult:
+    requested_feature = feature
+    route_reason: str | None = None
+
     if feature == "auto":
-        selected_feature, reason = route_feature(task)
-        answer = run_feature(selected_feature, task, max_width=max_width, output_mode=output_mode)
-        return f"[router] Selected feature: {selected_feature}. {reason}\n\n{answer}"
+        feature, route_reason = route_feature(task)
 
     prompt = load_feature_prompt(feature)
 
     if feature == "tabib":
         emergency, tabib_payload = apply_tabib_policy(task)
         if emergency:
-            return tabib_payload
+            return FeatureRunResult(
+                requested_feature=requested_feature,
+                feature=feature,
+                model="policy-short-circuit",
+                raw_answer=tabib_payload,
+                formatted_answer=tabib_payload,
+                structured=None,
+                fallback_note=None,
+                route_reason=route_reason,
+            )
         prompt = f"{prompt} {tabib_payload}"
 
     if feature == "rahnama":
@@ -177,7 +217,7 @@ def run_feature(
     primary_model = model_id_for_feature(feature)
     full_task = assemble_feature_task(prompt, task)
     used_model = primary_model
-    fallback_note = ""
+    fallback_note: str | None = None
 
     try:
         answer = _run_with_model_retries(feature, full_task, primary_model)
@@ -196,7 +236,37 @@ def run_feature(
             note_reason = f"Provider denied access to {primary_model}."
 
         answer = _run_with_model_retries(feature, full_task, used_model)
-        fallback_note = f"[fallback] {note_reason} Retried with {used_model}.\n\n"
+        fallback_note = f"[fallback] {note_reason} Retried with {used_model}."
 
     formatted_answer = format_feature_answer(feature, answer, max_width=max_width, output_mode=output_mode)
-    return f"{fallback_note}[model] {used_model}\n\n{formatted_answer}"
+    structured = _parse_structured_payload(feature, formatted_answer)
+
+    return FeatureRunResult(
+        requested_feature=requested_feature,
+        feature=feature,
+        model=used_model,
+        raw_answer=answer,
+        formatted_answer=formatted_answer,
+        structured=structured,
+        fallback_note=fallback_note,
+        route_reason=route_reason,
+    )
+
+
+def run_feature(
+    feature: str,
+    task: str,
+    max_width: int | None = None,
+    output_mode: str = OUTPUT_MODE_AUTO,
+) -> str:
+    result = run_feature_result(feature, task, max_width=max_width, output_mode=output_mode)
+
+    sections: list[str] = []
+    if result.requested_feature == "auto" and result.route_reason:
+        sections.append(f"[router] Selected feature: {result.feature}. {result.route_reason}")
+    if result.fallback_note:
+        sections.append(result.fallback_note)
+    sections.append(f"[model] {result.model}")
+    sections.append(result.formatted_answer)
+
+    return "\n\n".join(sections)

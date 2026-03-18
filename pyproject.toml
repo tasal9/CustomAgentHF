@@ -9,8 +9,11 @@ description = "Reusable smolagents starter package with Zeerak feature agents"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "fastapi",
+    "httpx",
     "smolagents[toolkit]",
     "python-dotenv",
+    "uvicorn",
 ]
 
 [project.optional-dependencies]
@@ -19,6 +22,7 @@ transformers = ["smolagents[transformers]"]
 
 [project.scripts]
 customagenthf = "customagenthf.cli:main"
+customagenthf-service = "customagenthf.service:main"
 
 [tool.setuptools.packages.find]
 include = ["customagenthf", "customagenthf.*"]

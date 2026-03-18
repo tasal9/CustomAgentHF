@@ -53,6 +53,27 @@ python examples/03_model_backends.py
 python examples/04_zeerak_feature_agents.py --feature codekhana --task "Teach me Python loops with 3 exercises"
 ```
 
+### 5. Run the Zeerak service
+
+Run the Python service as its own process:
+
+```bash
+customagenthf-service
+```
+
+or:
+
+```bash
+python -m customagenthf.service
+```
+
+The service defaults to `0.0.0.0:8001` and exposes:
+
+- `GET /health`
+- `GET /features`
+- `POST /feature/route`
+- `POST /feature/run`
+
 You can also run the package directly:
 
 ```bash
@@ -65,6 +86,14 @@ python -m customagenthf zeerak --list-features --no-truncate
 python -m customagenthf zeerak --search-features curriculum
 python -m customagenthf zeerak --search-features curriculum --output json
 python -m customagenthf zeerak --feature auto --task "Help me write a junior developer CV"
+```
+
+Example service request:
+
+```bash
+curl -X POST http://127.0.0.1:8001/feature/run \
+    -H "Content-Type: application/json" \
+    -d '{"feature":"hunar","task":"Build a CV summary for a junior web developer","output_mode":"markdown"}'
 ```
 
 ## File Layout
@@ -192,3 +221,20 @@ Rahnama formatting note:
 
 - Some examples require valid API keys and network access.
 - Local model usage with Transformers can be resource-intensive.
+
+## Separate Deployment
+
+This repo can be deployed as a standalone Zeerak agent service alongside `Zeerak_Final`.
+
+Local shape:
+
+- `Zeerak_Final` app on its own Node/Express process
+- `CustomAgentHF` service on its own Python/FastAPI process
+- Optional reverse proxy or private internal network between them
+
+Container shape:
+
+```bash
+docker build -t customagenthf-service .
+docker run --rm -p 8001:8001 --env-file .env customagenthf-service
+```

@@ -1099,3 +1099,13 @@
 2026-03-18T09:23:17+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.370.sha.2847fb6 (2847fb6) built at 2026-03-17T12:37:16Z
 2026-03-18T09:23:17+04:30 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/Users/yaqoobtasal/Library/Caches/Codacy/codacy-cli-v2/1.0.0-main.370.sha.2847fb6/codacy-cli-v2 analyze /Users/yaqoobtasal/Library/Application Support/Code - Insiders/User/mcp.json --format sarif] args=[/Users/yaqoobtasal/Library/Application Support/Code - Insiders/User/mcp.json] command=analyze
 2026-03-18T09:23:17+04:30 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
+2026-03-19T03:36:56+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.370.sha.2847fb6 (2847fb6) built at 2026-03-17T12:37:16Z
+2026-03-19T03:36:56+04:30 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command full_command=[/Users/yaqoobtasal/Library/Caches/Codacy/codacy-cli-v2/1.0.0-main.370.sha.2847fb6/codacy-cli-v2 analyze undefined --format sarif --tool trivy] args=[undefined] command=analyze
+2026-03-19T03:36:56+04:30 [ERROR] (codacy-cli-v2/cmd/analyze.go:487) Analysis failed because path does not exist path=undefined
+2026-03-19T03:37:18+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.370.sha.2847fb6 (2847fb6) built at 2026-03-17T12:37:16Z
+2026-03-19T03:37:18+04:30 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[undefined] command=analyze full_command=[/Users/yaqoobtasal/Library/Caches/Codacy/codacy-cli-v2/1.0.0-main.370.sha.2847fb6/codacy-cli-v2 analyze undefined --format sarif --tool trivy]
+2026-03-19T03:37:18+04:30 [ERROR] (codacy-cli-v2/cmd/analyze.go:487) Analysis failed because path does not exist path=undefined
+2026-03-19T03:39:50+04:30 [INFO] (codacy-cli-v2/cli-v2.go:27) Starting Codacy CLI version=1.0.0-main.370.sha.2847fb6 (2847fb6) built at 2026-03-17T12:37:16Z
+2026-03-19T03:39:50+04:30 [INFO] (codacy-cli-v2/cmd/root.go:34) Executing CLI command args=[/Users/yaqoobtasal/Documents/MyProject/CustomAgentHF/customagenthf/zeerak/agents.py] command=analyze full_command=[/Users/yaqoobtasal/Library/Caches/Codacy/codacy-cli-v2/1.0.0-main.370.sha.2847fb6/codacy-cli-v2 analyze /Users/yaqoobtasal/Documents/MyProject/CustomAgentHF/customagenthf/zeerak/agents.py --format sarif]
+2026-03-19T03:39:50+04:30 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool toolConfigPath=.codacy/tools-configs/pylint.rc tool=pylint
+2026-03-19T03:39:52+04:30 [INFO] (codacy-cli-v2/cmd/analyze.go:353) Config file found for tool tool=trivy toolConfigPath=.codacy/tools-configs/trivy.yaml
