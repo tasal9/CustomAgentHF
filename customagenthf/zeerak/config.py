@@ -1,7 +1,7 @@
 """Static configuration and model selection for Zeerak feature agents."""
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import lru_cache
 from importlib import resources
 
