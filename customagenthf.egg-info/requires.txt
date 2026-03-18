@@ -1,8 +1,0 @@
-smolagents[toolkit]
-python-dotenv
-
-[litellm]
-smolagents[litellm]
-
-[transformers]
-smolagents[transformers]
